@@ -55,7 +55,7 @@ def users():
         else:
             print("No directories use this version.")
     else:
-        print("This version hasn't been used by UMU before.")
+        print("This version hasn't been used by umu before.")
 
 
 def delete():

@@ -10,10 +10,10 @@ from configuration import *
 
 def print_help():
     print(
-        "umu-commander is an interactive CLI tool to help you manage Proton versions used by umu, as well as create launch configs.",
+        "umu-commander is an interactive CLI tool to help you manage Proton versions used by umu, as well as create enhanced launch configs.",
         "",
-        f'If your UMU Proton directory is not "{PROTON_DIR}", you must change it within the configuration.py file.',
-        f'What directories each Proton version is being used by is tracked within "{DB_NAME}" in "{DB_DIR}", which is also configurable.',
+        f'If your umu Proton directory is not "{PROTON_DIR}", you must change it within the configuration.py file.',
+        f'What directories each Proton version is being used by is tracked within "{DB_NAME}" in "{DB_DIR}", this is also configurable.',
         "",
         "umu-commander needs one of the following verbs specified after the executable name:",
         "\ttrack\t- Adds the current directory to a specified Proton version's list of users.",
@@ -25,10 +25,11 @@ def print_help():
         "\tdelete\t- Interactively deletes any Proton version in the tracking database with no users.",
         "\t\t  This will actually remove the Proton directories, use at your own risk.",
         "\t\t  If a Proton version has not been tracked before, it will not be removed.",
+        "\t\t  umu-commander will not delete anything without invoking this verb and receiving confirmation.",
         "\tcreate\t- Creates a custom configuration file in the current directory.",
         f"\trun\t- Uses the config in the current directory to run the program.",
         f"\t\t  This is NOT equivalent to umu-run --config {CONFIG_NAME},",
-        "\t\t  as vanilla umu configs do not support setting environment variables",
+        "\t\t  as vanilla umu configs do not support setting environment variables as of 07/2025.",
         sep="\n",
     )
 

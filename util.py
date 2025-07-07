@@ -9,7 +9,7 @@ def natural_sort_key(s: str, _nsre=re.compile(r"(\d+)")):
 
 
 def refresh_proton_versions():
-    print("Updating UMU Proton.")
+    print("Updating umu Proton.")
     umu_update_process = subprocess.run(
         ["umu-run", '""'],
         env={"PROTONPATH": "UMU-Latest", "UMU_LOG": "debug"},
