@@ -26,4 +26,4 @@ umu-commander needs one of the following verbs specified after the executable na
   
 ### Installation/Usage
 There isn't much in the way of installation, download all the .py files, add umu-commander to PATH, and make it executable, then run with `umu-commander <verb>`. \
-Alternatively you can run the script with `python3 -m <path/to/umu-commander.py>`
+Alternatively you can run the script with `python3 -m <path/to/umu-commander.py>`. Make sure your python version is at least 3.12.
