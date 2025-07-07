@@ -41,16 +41,16 @@ def create():
 
     # Proton selection
     versions: list[str] = [
-        "UMU-Latest",
+        "Always latest UMU Proton",
         *sorted(os.listdir(PROTON_DIR), reverse=True),
     ]
 
     selected_umu_latest: bool = False
     proton: str = get_selection("Select Proton version:", versions)
-    if proton == "UMU-Latest":
+    if proton == "Always latest UMU Proton":
         selected_umu_latest = True
-        proton = get_latest_umu()
-    params["proton"] = os.path.join(PROTON_DIR, proton)
+    else:
+        params["proton"] = os.path.join(PROTON_DIR, proton)
 
     # Select DLL overrides
     possible_overrides: list[DLLOverride] = [
