@@ -72,3 +72,10 @@ def delete():
             if selection.lower() == "y":
                 shutil.rmtree(os.path.join(PROTON_DIR, version))
                 db.delete(version)
+
+
+def untrack_unlinked():
+    for version, users in db.get().copy().items():
+        for user in users:
+            if not os.path.exists(user):
+                db.remove_from(version, user)

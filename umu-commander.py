@@ -67,6 +67,7 @@ def main() -> int:
             print_help()
             return 3
 
+    tracking.untrack_unlinked()
     db.write_to_file()
 
     return 0
