@@ -5,7 +5,7 @@ from typing import Any
 
 import tracking
 from configuration import *
-from util import get_latest_umu, get_selection, refresh_proton_versions
+from util import get_selection, refresh_proton_versions
 
 
 def _write(params: Mapping[str, Any]):
