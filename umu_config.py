@@ -131,7 +131,7 @@ def run():
         if not os.path.exists(config["umu"]["prefix"]):
             os.mkdir(config["umu"]["prefix"])
 
-        os.environ.update(config["env"])
+        os.environ.update(config.get("env", {}))
         subprocess.run(
             args=["umu-run", "--config", CONFIG_NAME],
             env=os.environ,
