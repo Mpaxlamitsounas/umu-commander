@@ -25,6 +25,7 @@ def main() -> int:
     try:
         db.init()
     except JSONDecodeError:
+        print(f"Tracking file at {os.path.join(DB_DIR, DB_NAME)} could not be read.")
         return 2
 
     if len(sys.argv) == 1:

@@ -10,13 +10,13 @@ _db: defaultdict[str, list[str]]
 def init():
     global _db
 
-    if os.path.exists(DB_DIR):
+    if os.path.exists(os.path.join(DB_DIR, DB_NAME)):
         with open(os.path.join(DB_DIR, DB_NAME), "rt") as db_file:
             try:
                 _db = defaultdict(list, json.load(db_file))
             except JSONDecodeError:
                 print(f"Could not decode DB file, is it valid JSON?")
-                raise JSONDecodeError
+                raise JSONDecodeError("", "", 0)
 
     else:
         _db = defaultdict(list)
@@ -40,8 +40,7 @@ def access(key: str):
 def append_to(key: str, value: str):
     global _db
 
-    if key in _db:
-        _db[key].append(value)
+    _db[key].append(value)
 
 
 def remove_from(key: str, value: str):
