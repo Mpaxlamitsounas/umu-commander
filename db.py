@@ -25,7 +25,7 @@ def init():
 def write_to_file():
     with open(os.path.join(DB_DIR, DB_NAME), "wt") as db_file:
         # noinspection PyTypeChecker
-        json.dump(_db, db_file)
+        json.dump(_db, db_file, indent="\t")
 
 
 def get():
