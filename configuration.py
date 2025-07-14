@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from Classes import DLLOverride
+from classes import DLLOverride
 
 PROTON_DIR: str = os.path.join(Path.home(), ".local/share/Steam/compatibilitytools.d/")
 DB_NAME: str = "tracking.json"
