@@ -2,7 +2,13 @@ import shutil
 
 import db
 from configuration import *
-from util import get_latest_umu, get_selection, refresh_proton_versions
+from util import (
+    collect_proton_versions,
+    get_latest_umu,
+    get_selection,
+    natural_sort_proton_ver_key,
+    refresh_proton_versions,
+)
 
 
 def untrack(quiet: bool = False):
@@ -19,7 +25,9 @@ def track(version: str = None, refresh_versions: bool = True, quiet: bool = Fals
         refresh_proton_versions()
 
     if version is None:
-        versions: list[str] = sorted(os.listdir(PROTON_DIR), reverse=True)
+        versions: list[str] = sorted(
+            collect_proton_versions(), key=natural_sort_proton_ver_key, reverse=True
+        )
         version: str = get_selection(
             "Select Proton version to add directory as user:", versions
         )
@@ -35,7 +43,9 @@ def track(version: str = None, refresh_versions: bool = True, quiet: bool = Fals
 
 
 def users():
-    versions = sorted(os.listdir(PROTON_DIR), reverse=True)
+    versions: list[str] = sorted(
+        collect_proton_versions(), key=natural_sort_proton_ver_key, reverse=True
+    )
 
     counts: list[str] = []
     for version in versions:
@@ -70,7 +80,7 @@ def delete():
                 f"{version} has no user directories, delete? (Y/N) ? "
             )
             if selection.lower() == "y":
-                shutil.rmtree(os.path.join(PROTON_DIR, version))
+                shutil.rmtree(os.path.join(version))
                 db.delete(version)
 
 

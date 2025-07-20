@@ -5,7 +5,12 @@ from typing import Any
 
 import tracking
 from configuration import *
-from util import get_selection, refresh_proton_versions
+from util import (
+    collect_proton_versions,
+    get_selection,
+    natural_sort_proton_ver_key,
+    refresh_proton_versions,
+)
 
 
 def _write(params: Mapping[str, Any]):
@@ -42,7 +47,9 @@ def create():
     # Proton selection
     versions: list[str] = [
         "Always latest UMU Proton",
-        *sorted(os.listdir(PROTON_DIR), reverse=True),
+        *sorted(
+            collect_proton_versions(), key=natural_sort_proton_ver_key, reverse=True
+        ),
     ]
 
     selected_umu_latest: bool = False
@@ -50,7 +57,7 @@ def create():
     if proton == "Always latest UMU Proton":
         selected_umu_latest = True
     else:
-        params["proton"] = os.path.join(PROTON_DIR, proton)
+        params["proton"] = os.path.join(proton)
 
     # Select DLL overrides
     possible_overrides: list[DLLOverride] = [

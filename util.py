@@ -4,7 +4,8 @@ import subprocess
 from configuration import *
 
 
-def natural_sort_key(s: str, _nsre=re.compile(r"(\d+)")):
+def natural_sort_proton_ver_key(s: str, _nsre=re.compile(r"(\d+)")):
+    s = s.split("/")[-1]
     return [int(text) if text.isdigit() else text for text in _nsre.split(s)]
 
 
@@ -27,9 +28,25 @@ def refresh_proton_versions():
             break
 
 
+def collect_proton_versions() -> list[str]:
+    versions: list[str] = []
+    for proton_dir in PROTON_DIRS:
+        for proton in os.listdir(proton_dir):
+            if proton == DB_NAME:
+                continue
+
+            versions.append(os.path.join(proton_dir, proton))
+
+    return versions
+
+
 def get_selection(
     prompt: str, selection_list: list[str], selection_list_feedback: list[str] = None
 ) -> str:
+    if len(selection_list) == 0:
+        print("Nothing to select from.")
+        exit(4)
+
     if selection_list_feedback is None:
         selection_list_feedback = [""] * len(selection_list)
 
@@ -62,7 +79,7 @@ def get_selection(
 def get_latest_umu():
     umu_versions = [
         version
-        for version in os.listdir(PROTON_DIR)
+        for version in collect_proton_versions()
         if "UMU" in version and version != DB_NAME
     ]
-    return sorted(umu_versions, key=natural_sort_key, reverse=True)[0]
+    return sorted(umu_versions, key=natural_sort_proton_ver_key, reverse=True)[0]

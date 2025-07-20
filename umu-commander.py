@@ -18,10 +18,6 @@ def print_help():
 
 
 def main() -> int:
-    if not os.path.exists(PROTON_DIR):
-        print("Proton directory does not exist.")
-        return 1
-
     try:
         db.init()
     except JSONDecodeError:
