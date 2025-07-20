@@ -10,6 +10,9 @@ _db: defaultdict[str, list[str]]
 def init():
     global _db
 
+    if not os.path.exists(DB_DIR):
+        os.mkdir(DB_DIR)
+
     if os.path.exists(os.path.join(DB_DIR, DB_NAME)):
         with open(os.path.join(DB_DIR, DB_NAME), "rt") as db_file:
             try:
