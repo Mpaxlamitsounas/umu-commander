@@ -90,7 +90,7 @@ def _translate_index_to_selection(
     len_counter: int = 0
 
     if selection_elements is not None:
-        selection_groups.insert(0, Group("", "", selection_elements))
+        selection_groups.insert(0, Group(elements=selection_elements))
 
     for group in selection_groups:
         len_counter += len(group.elements)
