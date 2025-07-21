@@ -8,8 +8,8 @@ from configuration import *
 from util import (
     collect_proton_versions,
     get_selection,
-    natural_sort_proton_ver_key,
     refresh_proton_versions,
+    values_to_elements,
 )
 
 
@@ -36,8 +36,10 @@ def create():
 
     # Prefix selection
     selection: str = get_selection(
-        "Select wine prefix:", [*os.listdir(PREFIX_DIR), "Current directory"]
-    )
+        "Select wine prefix:",
+        values_to_elements([*os.listdir(PREFIX_DIR), "Current directory"]),
+        None,
+    ).value
 
     if selection == "Current directory":
         params["prefix"] = os.path.join(os.getcwd(), "prefix")
@@ -45,24 +47,21 @@ def create():
         params["prefix"] = os.path.join(PREFIX_DIR, selection)
 
     # Proton selection
-    versions: list[str] = [
-        "Always latest UMU Proton",
-        *sorted(
-            collect_proton_versions(), key=natural_sort_proton_ver_key, reverse=True
-        ),
-    ]
-
     selected_umu_latest: bool = False
-    proton: str = get_selection("Select Proton version:", versions)
-    if proton == "Always latest UMU Proton":
+    proton: Element = get_selection(
+        "Select Proton version:",
+        values_to_elements(["Always latest UMU Proton"]),
+        [*collect_proton_versions(sort=True)],
+    )
+    if proton.value == "Always latest UMU Proton":
         selected_umu_latest = True
     else:
-        params["proton"] = os.path.join(proton)
+        params["proton"] = os.path.join(proton.dir, proton.version_num)
 
     # Select DLL overrides
-    possible_overrides: list[DLLOverride] = [
-        DLLOverride("Reset", ""),
-        DLLOverride("Done", ""),
+    possible_overrides: list[Element] = [
+        Element(info="Reset"),
+        Element(info="Done"),
         *DLL_OVERRIDES_OPTIONS,
     ]
     selected: set[int] = set()
@@ -71,7 +70,7 @@ def create():
         for idx, override in enumerate(possible_overrides):
             if idx in selected:
                 idx = "Y"
-            print(f"{idx}) {override.label}")
+            print(f"{idx}) {override.info}")
 
         try:
             index: int = int(input("? "))
@@ -94,12 +93,14 @@ def create():
         params["env"]["WINEDLLOVERRIDES"] = ""
         for selection in selected:
             # noinspection PyTypeChecker
-            params["env"]["WINEDLLOVERRIDES"] += possible_overrides[
-                selection
-            ].override_str
+            params["env"]["WINEDLLOVERRIDES"] += possible_overrides[selection].value
 
     # Set language locale
-    match get_selection("Select locale:", ["Default", "Japanese"]):
+    match get_selection(
+        "Select locale:",
+        values_to_elements(["Default", "Japanese"]),
+        None,
+    ).value:
         case "Default":
             pass
         case "Japanese":
@@ -117,13 +118,15 @@ def create():
         for file in os.listdir(os.getcwd())
         if os.path.isfile(os.path.join(os.getcwd(), file))
     ]
-    executable_name: str = get_selection("Select game executable:", files)
+    executable_name: str = get_selection(
+        "Select game executable:", values_to_elements(files), None
+    ).value
     params["exe"] = executable_name
 
     try:
         _write(params)
         print(f"Configuration file {CONFIG_NAME} created at {os.getcwd()}.")
-        print(f"Use by running umu-commander run")
+        print(f"Use by running umu-commander run.")
         if not selected_umu_latest:
             tracking.track(proton, False)
     except:

@@ -1,91 +1,95 @@
 import shutil
 
 import db
+from classes import Group
 from configuration import *
 from util import (
     collect_proton_versions,
-    get_latest_umu,
+    get_latest_umu_proton,
     get_selection,
-    natural_sort_proton_ver_key,
     refresh_proton_versions,
 )
 
 
 def untrack(quiet: bool = False):
     current_dir: str = os.getcwd()
-    for version, users in db.get().items():
-        db.remove_from(version, current_dir)
+    for proton_dir in db.copy().keys():
+        for proton_ver in db.get(proton_dir):
+            db.remove_from(proton_dir, proton_ver, current_dir)
 
     if not quiet:
         print("Directory removed from all user lists.")
 
 
-def track(version: str = None, refresh_versions: bool = True, quiet: bool = False):
+def track(proton: Element = None, refresh_versions: bool = True, quiet: bool = False):
     if refresh_versions:
         refresh_proton_versions()
 
-    if version is None:
-        versions: list[str] = sorted(
-            collect_proton_versions(), key=natural_sort_proton_ver_key, reverse=True
-        )
-        version: str = get_selection(
-            "Select Proton version to add directory as user:", versions
+    if proton is None:
+        proton: Element = get_selection(
+            "Select Proton version to add directory as user:",
+            None,
+            collect_proton_versions(sort=True),
         )
 
     untrack(quiet=True)
     current_directory: str = os.getcwd()
-    db.append_to(version, current_directory)
+    db.append_to(proton.dir, proton.version_num, current_directory)
 
     if not quiet:
         print(
-            f"Directory {current_directory} added to Proton version's {version} user list."
+            f"Directory {current_directory} added to Proton version's {proton.version_num} in {proton.dir} user list."
         )
 
 
 def users():
-    versions: list[str] = sorted(
-        collect_proton_versions(), key=natural_sort_proton_ver_key, reverse=True
+    proton_version_dirs: list[Group] = collect_proton_versions(sort=True)
+
+    for proton_dir in proton_version_dirs:
+        for proton in proton_dir.versions:
+            if proton.version_num in db.get(proton.dir):
+                proton.user_count = (
+                    "(" + str(len(db.get(proton.dir, proton.version_num))) + ")"
+                )
+            else:
+                proton.user_count = "(-)"
+
+    proton: Element = get_selection(
+        "Select Proton version to view user list:", None, proton_version_dirs
     )
 
-    counts: list[str] = []
-    for version in versions:
-        counts.append(
-            "(" + (str(len(db.access(version))) if version in db.get() else "-") + ")"
-        )
-
-    version: str = get_selection(
-        "Select Proton version to view user list:", versions, counts
-    )
-
-    if version in db.get():
-        users: list[str] = db.access(version)
-        if len(users) > 0:
-            print(f"Directories using {version}:")
-            print(*users, sep="\n")
+    if proton.dir in db.copy() and proton.version_num in db.get(proton.dir):
+        version_users: list[str] = db.get(proton.dir, proton.version_num)
+        if len(version_users) > 0:
+            print(f"Directories using {proton.version_num} of {proton.dir}:")
+            print(*version_users, sep="\n")
         else:
-            print("No directories use this version.")
+            print("No directories currently use this version.")
     else:
         print("This version hasn't been used by umu before.")
 
 
 def delete():
-    latest_umu = get_latest_umu()
+    for proton_dir in db.copy().keys():
+        for proton_ver, version_users in db.get(proton_dir).copy().items():
+            if proton_ver == get_latest_umu_proton():
+                continue
 
-    for version, users in db.get().copy().items():
-        if version == latest_umu:
-            continue
-
-        if len(users) == 0:
-            selection: str = input(
-                f"{version} has no user directories, delete? (Y/N) ? "
-            )
-            if selection.lower() == "y":
-                shutil.rmtree(os.path.join(version))
-                db.delete(version)
+            if len(version_users) == 0:
+                selection: str = input(
+                    f"{proton_ver} in {proton_dir} has no using directories, delete? (Y/N) ? "
+                )
+                if selection.lower() == "y":
+                    try:
+                        shutil.rmtree(os.path.join(proton_dir, proton_ver))
+                    except FileNotFoundError:
+                        pass
+                    db.delete(proton_dir, proton_ver)
 
 
 def untrack_unlinked():
-    for version, users in db.get().copy().items():
-        for user in users:
-            if not os.path.exists(user):
-                db.remove_from(version, user)
+    for proton_dir in db.copy().keys():
+        for proton_ver, version_users in db.get(proton_dir).items():
+            for user in version_users:
+                if not os.path.exists(user):
+                    db.remove_from(proton_dir, proton_ver, user)

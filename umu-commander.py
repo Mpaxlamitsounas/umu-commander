@@ -19,7 +19,7 @@ def print_help():
 
 def main() -> int:
     try:
-        db.init()
+        db.load()
     except JSONDecodeError:
         print(f"Tracking file at {os.path.join(DB_DIR, DB_NAME)} could not be read.")
         return 2
@@ -48,7 +48,7 @@ def main() -> int:
             return 3
 
     tracking.untrack_unlinked()
-    db.write_to_file()
+    db.dump()
 
     return 0
 

@@ -1,3 +1,42 @@
+from dataclasses import dataclass
 from typing import NamedTuple
 
-DLLOverride = NamedTuple("DLLOverride", [("label", str), ("override_str", str)])
+
+@dataclass
+class Element:
+    group_id: str = ""
+    value: str = ""
+    info: str = ""
+
+    # proton terminology for convenience
+    @property
+    def dir(self):
+        return self.group_id
+
+    @property
+    def version_num(self):
+        return self.value
+
+    @property
+    def user_count(self):
+        return self.info
+
+    @user_count.setter
+    def user_count(self, value):
+        self.info = value
+
+
+@dataclass
+class Group:
+    identity: str = ""
+    label: str = ""
+    elements: list[Element] = list
+
+    # proton terminology for convenience
+    @property
+    def path(self):
+        return self.identity
+
+    @property
+    def versions(self):
+        return self.elements

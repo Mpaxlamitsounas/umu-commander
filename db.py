@@ -4,57 +4,59 @@ from json import JSONDecodeError
 
 from configuration import *
 
-_db: defaultdict[str, list[str]]
+_db: defaultdict[str, defaultdict[str, list[str]]]
 
 
-def init():
+def load():
     global _db
 
     if not os.path.exists(DB_DIR):
         os.mkdir(DB_DIR)
 
-    if os.path.exists(os.path.join(DB_DIR, DB_NAME)):
+    try:
         with open(os.path.join(DB_DIR, DB_NAME), "rt") as db_file:
-            try:
-                _db = defaultdict(list, json.load(db_file))
-            except JSONDecodeError:
-                print(f"Could not decode DB file, is it valid JSON?")
-                raise JSONDecodeError("", "", 0)
+            _db = defaultdict(lambda: defaultdict(list))
+            _db.update(json.load(db_file))
+    except JSONDecodeError:
+        print(f"Could not decode DB file, is it valid JSON?")
+        raise JSONDecodeError("", "", 0)
+    except FileNotFoundError:
+        _db = defaultdict(lambda: defaultdict(list))
 
-    else:
-        _db = defaultdict(list)
 
-
-def write_to_file():
+def dump():
     with open(os.path.join(DB_DIR, DB_NAME), "wt") as db_file:
         # noinspection PyTypeChecker
         json.dump(_db, db_file, indent="\t")
 
 
-def get():
-    return _db
+def copy():
+    return _db.copy()
 
 
-def access(key: str):
-    if key in _db:
-        return _db[key]
+def get(proton_dir: str, proton_ver: str = None) -> dict[str, list[str]] | list[str]:
+    if proton_ver is None:
+        return _db[proton_dir]
+    return _db[proton_dir][proton_ver]
 
 
-def append_to(key: str, value: str):
+def append_to(proton_dir: str, proton_ver: str, user_dir: str):
     global _db
 
-    _db[key].append(value)
+    if proton_ver not in _db[proton_dir]:
+        _db[proton_dir][proton_ver] = []
+
+    _db[proton_dir][proton_ver].append(user_dir)
 
 
-def remove_from(key: str, value: str):
+def remove_from(proton_dir: str, proton_ver: str, user_dir: str):
     global _db
 
-    if key in _db and value in _db[key]:
-        _db[key].remove(value)
+    if user_dir in _db[proton_dir][proton_ver]:
+        _db[proton_dir][proton_ver].remove(user_dir)
 
 
-def delete(key: str):
+def delete(proton_dir: str, proton_ver: str):
     global _db
 
-    if key in _db:
-        del _db[key]
+    del _db[proton_dir][proton_ver]
