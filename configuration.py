@@ -14,6 +14,7 @@ UMU_PROTON_DIR: str = os.path.join(
 DB_NAME: str = "tracking.json"
 DB_DIR: str = os.path.join(Path.home(), ".local/share/umu/compatibilitytools")
 CONFIG_NAME: str = "umu-config.toml"
+# default WINE prefix directory
 PREFIX_DIR: str = os.path.join(Path.home(), ".local/share/wineprefixes/")
 # Label, override string, follow the example
 DLL_OVERRIDES_OPTIONS: list[Element] = [

@@ -34,7 +34,7 @@ def track(proton: Element = None, refresh_versions: bool = True, quiet: bool = F
 
     untrack(quiet=True)
     current_directory: str = os.getcwd()
-    db.append_to(proton.dir, proton.version_num, current_directory)
+    db.add_to(proton.dir, proton.version_num, current_directory)
 
     if not quiet:
         print(

@@ -40,7 +40,8 @@ def get(proton_dir: str, proton_ver: str = None) -> dict[str, list[str]] | list[
     return _db[proton_dir][proton_ver]
 
 
-def append_to(proton_dir: str, proton_ver: str, user_dir: str):
+# add user_dir to proton_ver's of proton_dir list of users
+def add_to(proton_dir: str, proton_ver: str, user_dir: str):
     global _db
 
     if proton_ver not in _db[proton_dir]:

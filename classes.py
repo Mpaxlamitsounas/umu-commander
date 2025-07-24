@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import NamedTuple
 
 
+# analogous to Proton version
 @dataclass
 class Element:
     group_id: str = ""
@@ -26,6 +27,7 @@ class Element:
         self.info = value
 
 
+# analogous to Proton directory
 @dataclass
 class Group:
     identity: str = ""
