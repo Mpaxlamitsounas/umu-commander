@@ -25,5 +25,5 @@ umu-commander needs one of the following verbs specified after the executable na
   * This is NOT equivalent to `umu-run --config <config_name>`, as vanilla umu configs do not support setting environment variables as of 07/2025.
   
 ### Installation/Usage
-There isn't much in the way of installation; download the source code, add umu-commander in the src directory to PATH, and make it executable, then run with `umu-commander <verb>`. \
+There isn't much in the way of installation; download the source code, add `umu-commander/src/umu_commander` to your PATH, and make it executable, then run with `umu-commander <verb>`. \
 Your python version should be at least 3.12, and umu-run must be on your PATH.
