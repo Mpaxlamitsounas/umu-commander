@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from classes import Element
+from umu_commander.classes import Element
 
 PROTON_DIRS: list[str] = [
     os.path.join(Path.home(), ".local/share/Steam/compatibilitytools.d/"),

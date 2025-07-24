@@ -1,13 +1,15 @@
 import shutil
 
-import db
-from classes import Group
-from configuration import *
-from util import (
+from umu_commander import db
+from umu_commander.classes import Group
+from umu_commander.configuration import *
+from umu_commander.proton import (
     collect_proton_versions,
     get_latest_umu_proton,
-    get_selection,
     refresh_proton_versions,
+)
+from umu_commander.util import (
+    get_selection,
 )
 
 

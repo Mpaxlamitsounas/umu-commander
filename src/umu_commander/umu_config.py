@@ -3,12 +3,11 @@ import tomllib
 from collections.abc import Mapping
 from typing import Any
 
-import tracking
-from configuration import *
-from util import (
-    collect_proton_versions,
+from umu_commander import tracking
+from umu_commander.configuration import *
+from umu_commander.proton import collect_proton_versions, refresh_proton_versions
+from umu_commander.util import (
     get_selection,
-    refresh_proton_versions,
     values_to_elements,
 )
 

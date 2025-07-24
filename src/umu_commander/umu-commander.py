@@ -2,10 +2,8 @@
 import sys
 from json import JSONDecodeError
 
-import db
-import tracking
-import umu_config
-from configuration import *
+from umu_commander import db, tracking, umu_config
+from umu_commander.configuration import *
 
 
 def print_help():

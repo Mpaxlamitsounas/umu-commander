@@ -2,7 +2,7 @@ import json
 from collections import defaultdict
 from json import JSONDecodeError
 
-from configuration import *
+from umu_commander.configuration import *
 
 _db: defaultdict[str, defaultdict[str, list[str]]]
 
@@ -17,9 +17,11 @@ def load():
         with open(os.path.join(DB_DIR, DB_NAME), "rt") as db_file:
             _db = defaultdict(lambda: defaultdict(list))
             _db.update(json.load(db_file))
+
     except JSONDecodeError:
         print(f"Could not decode DB file, is it valid JSON?")
         raise JSONDecodeError("", "", 0)
+
     except FileNotFoundError:
         _db = defaultdict(lambda: defaultdict(list))
 
@@ -37,6 +39,7 @@ def copy():
 def get(proton_dir: str, proton_ver: str = None) -> dict[str, list[str]] | list[str]:
     if proton_ver is None:
         return _db[proton_dir]
+
     return _db[proton_dir][proton_ver]
 
 
