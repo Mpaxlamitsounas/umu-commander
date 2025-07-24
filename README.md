@@ -6,7 +6,7 @@ What directories each Proton version is being used by is tracked within `trackin
 
 Vanilla umu configuration files currently do not support setting environmental variables, this tool adds such functionality by adding an extra TOML table in the umu config itself. An example config is available under the name `example_config.toml`.
 
-If your umu Proton directory is not `$HOME/.local/share/Steam/compatibilitytools.d/`, you must change it within the configuration.py file.
+umu-commander will look for your installed Proton versions using a predetermined list of directories, if you notice some versions missing, the listed can be edited within the `configuration.py` file in the src directory.
 
 ### Verbs
 umu-commander needs one of the following verbs specified after the executable name:
@@ -25,6 +25,5 @@ umu-commander needs one of the following verbs specified after the executable na
   * This is NOT equivalent to `umu-run --config <config_name>`, as vanilla umu configs do not support setting environment variables as of 07/2025.
   
 ### Installation/Usage
-There isn't much in the way of installation; download all the .py files, add umu-commander to PATH, and make it executable, then run with `umu-commander <verb>`. Alternatively you can run the script with `python3 -m <path/to/umu-commander.py>`.
-
-In either case make sure your python version is at least 3.12, and umu-run is on your PATH.
+There isn't much in the way of installation; download the source code, add umu-commander in the src directory to PATH, and make it executable, then run with `umu-commander <verb>`. \
+Your python version should be at least 3.12, and umu-run must be on your PATH.
