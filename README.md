@@ -34,3 +34,10 @@ umu-commander needs one of the following verbs specified after the executable na
   
 ### Installation/Usage
 Add umu-run to your PATH and then install with pipx by running `pipx install umu-commander`. After that you can invoke umu-commander by running `umu-commander <verb>`. 
+
+### Return codes
+| Number | Name              | Description                                                     |
+|:-------|:------------------|:----------------------------------------------------------------|
+| 0      | SUCCESS           | Program executed as intended.                                   |
+| 1      | READING_ERROR     | Failed to parse a file and could not recover.                   |
+| 2      | INVALID_SELECTION | User selected an invalid verb or there are no valid selections. |
