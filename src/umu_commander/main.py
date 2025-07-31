@@ -1,9 +1,13 @@
 #!/usr/bin/python3
+import os
 import sys
 from json import JSONDecodeError
 
-from umu_commander import db, tracking, umu_config
-from umu_commander.configuration import *
+from umu_commander import tracking, umu_config
+from umu_commander.classes import ExitCode
+from umu_commander.configuration import CONFIG_DIR, CONFIG_NAME
+from umu_commander.configuration import Configuration as config
+from umu_commander.database import Database as db
 
 
 def print_help():
@@ -15,16 +19,28 @@ def print_help():
     )
 
 
-def main() -> int:
+def main() -> ExitCode:
+    try:
+        config.load()
+    except (JSONDecodeError, KeyError):
+        config_path: str = os.path.join(CONFIG_DIR, CONFIG_NAME)
+        print(
+            f"Config file at {config_path} could not be read."
+        )
+        os.rename(config_path, os.path.join(CONFIG_DIR, CONFIG_NAME + ".old"))
+
     try:
         db.load()
     except JSONDecodeError:
-        print(f"Tracking file at {os.path.join(DB_DIR, DB_NAME)} could not be read.")
-        return 2
+        db_path: str = os.path.join(config.DB_DIR, config.DB_NAME)
+        print(
+            f"Tracking file at {db_path} could not be read."
+        )
+        os.rename(db_path, os.path.join(config.DB_DIR, config.DB_NAME + ".old"))
 
     if len(sys.argv) == 1:
         print_help()
-        return 0
+        return ExitCode.SUCCESS
 
     verb: str = sys.argv[1]
     match verb:
@@ -43,13 +59,13 @@ def main() -> int:
         case _:
             print("Invalid verb.")
             print_help()
-            return 3
+            return ExitCode.INVALID_SELECTION
 
     tracking.untrack_unlinked()
     db.dump()
 
-    return 0
+    return ExitCode.SUCCESS
 
 
 if __name__ == "__main__":
-    exit(main())
+    exit(main().value)
