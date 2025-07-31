@@ -1,67 +1,56 @@
+import os
 import subprocess
 import tomllib
-from collections.abc import Mapping
 from typing import Any
 
+import tomli_w
+
 from umu_commander import tracking
-from umu_commander.configuration import *
+from umu_commander.classes import DLLOverride, ProtonVer
+from umu_commander.configuration import Configuration as config
 from umu_commander.proton import collect_proton_versions, refresh_proton_versions
 from umu_commander.util import (
     get_selection,
-    values_to_elements,
+    strings_to_values,
 )
-
-
-def _write(params: Mapping[str, Any]):
-    config: str = "[umu]\n"
-    for key in set(params.keys()) - {"env", "launch_args"}:
-        config += f'{key} = "{params[key]}"\n'
-
-    config += f"launch_args = {params["launch_args"]}\n"
-
-    config += "\n[env]\n"
-    for key, value in params["env"].items():
-        config += f'{key} = "{value}"\n'
-
-    config_file = open(CONFIG_NAME, "wt")
-    config_file.write(config)
-    config_file.close()
 
 
 def create():
     refresh_proton_versions()
 
-    params: dict[str, Any] = {"env": {}}
+    params: dict[str, Any] = {"umu": {}, "env": {}}
 
     # Prefix selection
     selection: str = get_selection(
         "Select wine prefix:",
-        values_to_elements([*os.listdir(PREFIX_DIR), "Current directory"]),
+        strings_to_values(
+            [*os.listdir(config.DEFAULT_PREFIX_DIR), "Current directory"]
+        ),
         None,
     ).value
 
     if selection == "Current directory":
-        params["prefix"] = os.path.join(os.getcwd(), "prefix")
+        params["umu"]["prefix"] = os.path.join(os.getcwd(), "prefix")
     else:
-        params["prefix"] = os.path.join(PREFIX_DIR, selection)
+        params["umu"]["prefix"] = os.path.join(config.DEFAULT_PREFIX_DIR, selection)
 
     # Proton selection
     selected_umu_latest: bool = False
-    proton: Element = get_selection(
+    proton_ver: ProtonVer = get_selection(
         "Select Proton version:",
-        values_to_elements(["Always latest UMU Proton"]),
-        [*collect_proton_versions(sort=True)],
-    )
-    if proton.value == "Always latest UMU Proton":
+        strings_to_values(["Always latest UMU Proton"]),
+        collect_proton_versions(sort=True),
+    ).as_proton_ver()
+    if proton_ver.version_num == "Always latest UMU Proton":
         selected_umu_latest = True
     else:
-        params["proton"] = os.path.join(proton.dir, proton.version_num)
+        params["umu"]["proton"] = os.path.join(proton_ver.dir, proton_ver.version_num)
 
     # Select DLL overrides
-    possible_overrides: list[Element] = [
-        Element(info="Reset"),
-        Element(info="Done"),
-        *DLL_OVERRIDES_OPTIONS,
+    possible_overrides: list[DLLOverride] = [
+        DLLOverride(label="Reset"),
+        DLLOverride(label="Done"),
+        *config.DLL_OVERRIDES_OPTIONS,
     ]
     selected: set[int] = set()
     while True:
@@ -69,7 +58,7 @@ def create():
         for idx, override in enumerate(possible_overrides):
             if idx in selected:
                 idx = "Y"
-            print(f"{idx}) {override.info}")
+            print(f"{idx}) {override.label}")
 
         try:
             index: int = int(input("? "))
@@ -92,12 +81,14 @@ def create():
         params["env"]["WINEDLLOVERRIDES"] = ""
         for selection in selected:
             # noinspection PyTypeChecker
-            params["env"]["WINEDLLOVERRIDES"] += possible_overrides[selection].value
+            params["env"]["WINEDLLOVERRIDES"] += possible_overrides[
+                selection
+            ].override_str
 
     # Set language locale
     match get_selection(
         "Select locale:",
-        values_to_elements(["Default", "Japanese"]),
+        strings_to_values(["Default", "Japanese"]),
         None,
     ).value:
         case "Default":
@@ -109,7 +100,7 @@ def create():
     launch_args: list[str] = input(
         "Enter executable options, separated by spaces:\n? "
     ).split()
-    params["launch_args"] = launch_args
+    params["umu"]["launch_args"] = launch_args
 
     # Select executable name
     files: list[str] = [
@@ -118,30 +109,31 @@ def create():
         if os.path.isfile(os.path.join(os.getcwd(), file))
     ]
     executable_name: str = get_selection(
-        "Select game executable:", values_to_elements(files), None
+        "Select game executable:", strings_to_values(files), None
     ).value
-    params["exe"] = executable_name
+    params["umu"]["exe"] = executable_name
 
     try:
-        _write(params)
-        print(f"Configuration file {CONFIG_NAME} created at {os.getcwd()}.")
+        with open(config.UMU_CONFIG_NAME, "wb") as file:
+            tomli_w.dump(params, file)
+
+        print(f"Configuration file {config.UMU_CONFIG_NAME} created at {os.getcwd()}.")
         print(f"Use by running umu-commander run.")
         if not selected_umu_latest:
-            tracking.track(proton, False)
+            tracking.track(proton_ver, False)
     except:
-        print("Could not create configuration file.")
+        print("Could not create configiguration file.")
 
 
 def run():
-    with open(CONFIG_NAME, "rb") as toml_file:
-        # noinspection PyTypeChecker
-        config = tomllib.load(toml_file)
+    with open(config.UMU_CONFIG_NAME, "rb") as toml_file:
+        toml_conf = tomllib.load(toml_file)
 
-        if not os.path.exists(config["umu"]["prefix"]):
-            os.mkdir(config["umu"]["prefix"])
+        if not os.path.exists(toml_conf["umu"]["prefix"]):
+            os.mkdir(toml_conf["umu"]["prefix"])
 
-        os.environ.update(config.get("env", {}))
+        os.environ.update(toml_conf.get("env", {}))
         subprocess.run(
-            args=["umu-run", "--config", CONFIG_NAME],
+            args=["umu-run", "--config", config.UMU_CONFIG_NAME],
             env=os.environ,
         )
