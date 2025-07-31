@@ -59,6 +59,7 @@ def main() -> ExitCode:
 
     tracking.untrack_unlinked()
     db.dump()
+    config.dump()
 
     return ExitCode.SUCCESS
 
