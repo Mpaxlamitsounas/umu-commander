@@ -3,20 +3,20 @@ import unittest
 from tests import *
 from umu_commander import proton
 from umu_commander.classes import Group
-from umu_commander.configuration import DB_NAME
+from umu_commander.configuration import Configuration as config
 
 
 class Tracking(unittest.TestCase):
     def setUp(self):
-        proton.PROTON_DIRS = [PROTON_DIR_1, PROTON_DIR_2]
-        proton.UMU_PROTON_DIR = PROTON_DIR_1
+        config.PROTON_PATHS = [PROTON_DIR_1, PROTON_DIR_2]
+        config.UMU_PROTON_PATH = PROTON_DIR_1
         setup()
 
     def tearDown(self):
         teardown()
 
     def test_collect_proton_versions(self):
-        with open(os.path.join(PROTON_DIR_1, DB_NAME), "wt") as file:
+        with open(os.path.join(PROTON_DIR_1, config.DB_NAME), "wt") as file:
             file.write("Must be ignored.")
         versions: list[Group] = proton.collect_proton_versions()
         self.assertTrue(

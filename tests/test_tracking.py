@@ -1,13 +1,15 @@
 import unittest
 
 from tests import *
-from umu_commander import db, tracking
-from umu_commander.classes import Element
+from umu_commander import tracking
+from umu_commander.classes import ProtonVer
+from umu_commander.configuration import Configuration as config
+from umu_commander.database import Database as db
 
 
 class Tracking(unittest.TestCase):
     def setUp(self):
-        db.DB_DIR = TESTING_DIR
+        config.DB_DIR = TESTING_DIR
         setup()
         db.load()
 
@@ -17,7 +19,7 @@ class Tracking(unittest.TestCase):
     def test_track_untrack(self):
         os.chdir(USER_DIR)
 
-        tracking.track(Element(PROTON_DIR_1, PROTON_BIG), refresh_versions=False)
+        tracking.track(ProtonVer(PROTON_DIR_1, PROTON_BIG), refresh_versions=False)
         self.assertIn(PROTON_BIG, db.get(PROTON_DIR_1))
         self.assertIn(USER_DIR, db.get(PROTON_DIR_1, PROTON_BIG))
 
@@ -28,7 +30,7 @@ class Tracking(unittest.TestCase):
     def test_track_auto_untrack(self):
         os.chdir(USER_DIR)
 
-        tracking.track(Element(PROTON_DIR_1, PROTON_BIG), refresh_versions=False)
+        tracking.track(ProtonVer(PROTON_DIR_1, PROTON_BIG), refresh_versions=False)
         self.assertIn(PROTON_BIG, db.get(PROTON_DIR_1))
         self.assertIn(USER_DIR, db.get(PROTON_DIR_1, PROTON_BIG))
 
