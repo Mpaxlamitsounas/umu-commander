@@ -24,18 +24,14 @@ def main() -> ExitCode:
         config.load()
     except (JSONDecodeError, KeyError):
         config_path: str = os.path.join(CONFIG_DIR, CONFIG_NAME)
-        print(
-            f"Config file at {config_path} could not be read."
-        )
+        print(f"Config file at {config_path} could not be read.")
         os.rename(config_path, os.path.join(CONFIG_DIR, CONFIG_NAME + ".old"))
 
     try:
         db.load()
     except JSONDecodeError:
         db_path: str = os.path.join(config.DB_DIR, config.DB_NAME)
-        print(
-            f"Tracking file at {db_path} could not be read."
-        )
+        print(f"Tracking file at {db_path} could not be read.")
         os.rename(db_path, os.path.join(config.DB_DIR, config.DB_NAME + ".old"))
 
     if len(sys.argv) == 1:
