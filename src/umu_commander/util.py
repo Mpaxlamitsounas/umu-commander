@@ -58,7 +58,7 @@ def get_selection(
 ) -> Element:
     if not _selection_set_valid(selection_elements, selection_groups):
         print("Nothing to select from.")
-        exit(ExitCode.INVALID_SELECTION)
+        exit(ExitCode.INVALID_SELECTION.value)
 
     if selection_groups is None:
         selection_groups = []

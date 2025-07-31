@@ -36,7 +36,7 @@ def main() -> ExitCode:
 
     if len(sys.argv) == 1:
         print_help()
-        return ExitCode.SUCCESS
+        return ExitCode.SUCCESS.value
 
     verb: str = sys.argv[1]
     match verb:
@@ -55,14 +55,14 @@ def main() -> ExitCode:
         case _:
             print("Invalid verb.")
             print_help()
-            return ExitCode.INVALID_SELECTION
+            return ExitCode.INVALID_SELECTION.value
 
     tracking.untrack_unlinked()
     db.dump()
     config.dump()
 
-    return ExitCode.SUCCESS
+    return ExitCode.SUCCESS.value
 
 
 if __name__ == "__main__":
-    exit(main().value)
+    exit(main())
