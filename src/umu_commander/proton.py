@@ -2,12 +2,13 @@ import os
 import re
 import subprocess
 
-from umu_commander.classes import Element, Group
-from umu_commander.configuration import DB_NAME, PROTON_DIRS, UMU_PROTON_DIR
+from umu_commander.classes import ProtonDir, ProtonVer
+from umu_commander.configuration import Configuration as config
+from umu_commander.database import Database as db
 
 
-def _natural_sort_proton_ver_key(e: Element, _nsre=re.compile(r"(\d+)")):
-    s: str = e.value
+def _natural_sort_proton_ver_key(p: ProtonVer, _nsre=re.compile(r"(\d+)")):
+    s: str = p.version_num
     return [int(text) if text.isdigit() else text for text in _nsre.split(s)]
 
 
@@ -31,33 +32,48 @@ def refresh_proton_versions():
             break
 
 
-def _sort_proton_versions(versions: list[Element]) -> list[Element]:
+def _sort_proton_versions(versions: list[ProtonVer]) -> list[ProtonVer]:
     return sorted(versions, key=_natural_sort_proton_ver_key, reverse=True)
 
 
-def collect_proton_versions(sort: bool = False) -> list[Group]:
-    version_groups: list[Group] = []
-    for proton_dir in PROTON_DIRS:
-        versions: list[Element] = [
-            Element(proton_dir, version, "")
+def collect_proton_versions(
+    sort: bool = False, user_count: bool = False
+) -> list[ProtonDir]:
+    def get_user_count(proton_dir: str, proton_ver) -> str:
+        return (
+            "(" + str(len(db.get(proton_dir, proton_ver))) + ")"
+            if proton_ver in db.get(proton_dir)
+            else "(-)"
+        )
+
+    proton_dirs: list[ProtonDir] = []
+    for proton_dir in config.PROTON_PATHS:
+        versions: list[ProtonVer] = [
+            ProtonVer(
+                proton_dir,
+                version,
+                get_user_count(proton_dir, version) if user_count else "",
+            )
             for version in os.listdir(proton_dir)
-            if version != DB_NAME
+            if os.path.isdir(os.path.join(proton_dir, version))
         ]
+
         if sort:
             versions = sorted(versions, key=_natural_sort_proton_ver_key, reverse=True)
 
-        version_groups.append(
-            Group(proton_dir, f"Proton versions in {proton_dir}:", versions)
+        proton_dirs.append(
+            ProtonDir(proton_dir, f"Proton versions in {proton_dir}:", versions)
         )
 
-    return version_groups
+    return proton_dirs
 
 
 def get_latest_umu_proton():
-    umu_proton_versions: list[Element] = [
-        Element(UMU_PROTON_DIR, version, "")
-        for version in os.listdir(UMU_PROTON_DIR)
-        if "UMU" in version and version != DB_NAME
+    umu_proton_versions: list[ProtonVer] = [
+        ProtonVer(config.UMU_PROTON_PATH, version)
+        for version in os.listdir(config.UMU_PROTON_PATH)
+        if "UMU" in version
+        and os.path.isdir(os.path.join(config.UMU_PROTON_PATH, version))
     ]
     umu_proton_versions = sorted(
         umu_proton_versions, key=_natural_sort_proton_ver_key, reverse=True
