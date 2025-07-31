@@ -6,7 +6,15 @@ What directories each Proton version is being used by is tracked within `trackin
 
 Vanilla umu configuration files currently do not support setting environmental variables, this tool adds such functionality by adding an extra TOML table in the umu config itself. An example config is available under the name `example_config.toml`.
 
-umu-commander will look for your installed Proton versions using a predetermined list of directories, if you notice some versions missing, the listed can be edited within the `configuration.py` file in the src directory.
+### Config
+The configuration file lives at `~/.config/umu-commander.toml`. Within it, you can edit the following:
+* PROTON_PATHS: List of directories umu-commander will search for Proton versions.
+* UMU_PROTON_PATH: Directory where umu itself downloads its umu Proton versions.
+* DB_NAME: Tracking DB filename.
+* DB_DIR: Directory where the Tracking DB is stored.
+* UMU_CONFIG_NAME: Name of the umu config created using umu-commander run.
+* DEFAULT_PREFIX_DIR: Directory where WINE prefixes are scanned.
+* [DLL_OVERRIDES_OPTIONS]: Category to list possible DLL overrides in "Label" = "Override string" format.
 
 ### Verbs
 umu-commander needs one of the following verbs specified after the executable name:
