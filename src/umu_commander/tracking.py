@@ -58,11 +58,14 @@ def users():
         version_users: list[str] = db.get(proton_ver.dir, proton_ver.version_num)
         if len(version_users) > 0:
             print(
-                f"Directories tracked by {proton_ver.version_num} of {proton_ver.dir}:"
+                f"Directories tracked by {proton_ver.version_num} of {proton_ver.dir}:",
+                *version_users,
+                sep="\n\t",
             )
-            print(*version_users, sep="\n")
+
         else:
             print("This version is tracking no directories.")
+
     else:
         print("This version hasn't been used by umu before.")
 

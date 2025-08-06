@@ -11,7 +11,6 @@ class Tracking(unittest.TestCase):
     def setUp(self):
         config.DB_DIR = TESTING_DIR
         setup()
-        db.load()
 
     def tearDown(self):
         teardown()

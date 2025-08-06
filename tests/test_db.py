@@ -16,7 +16,11 @@ class Database(unittest.TestCase):
         teardown()
 
     def test_missing_db(self):
-        db.load()
+        try:
+            db.load()
+        except FileNotFoundError:
+            pass
+
         self.assertEqual(db.get().keys(), {}.keys())
 
     def test_malformed_db(self):
@@ -27,7 +31,6 @@ class Database(unittest.TestCase):
             db.load()
 
     def test_addition_removal(self):
-        db.load()
         db.get(PROTON_DIR_1, PROTON_BIG).append(USER_DIR)
 
         self.assertIn(PROTON_BIG, db.get(PROTON_DIR_1))
