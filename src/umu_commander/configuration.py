@@ -1,3 +1,4 @@
+import importlib
 import os
 import tomllib
 from pathlib import Path
@@ -44,13 +45,13 @@ def load():
                 ]
             )
 
-        module = __import__(__name__)
+        module = importlib.import_module(__name__)
         for key, value in toml_conf.items():
             setattr(module, key, value)
 
 
 def _get_attributes() -> dict[str, Any]:
-    module = __import__(__name__)
+    module = importlib.import_module(__name__)
     attributes: dict[str, Any] = {}
     for key in dir(module):
         value = getattr(module, key)
