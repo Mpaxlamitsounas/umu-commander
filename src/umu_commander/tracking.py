@@ -57,7 +57,9 @@ def users():
     if proton_ver.dir in db.get() and proton_ver.version_num in db.get(proton_ver.dir):
         version_users: list[str] = db.get(proton_ver.dir, proton_ver.version_num)
         if len(version_users) > 0:
-            print(f"Directories tracked by {proton_ver.version_num} of {proton_ver.dir}:")
+            print(
+                f"Directories tracked by {proton_ver.version_num} of {proton_ver.dir}:"
+            )
             print(*version_users, sep="\n")
         else:
             print("This version is tracking no directories.")

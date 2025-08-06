@@ -141,4 +141,3 @@ def run():
             args=["umu-run", "--config", config.UMU_CONFIG_NAME],
             env=os.environ,
         )
-
