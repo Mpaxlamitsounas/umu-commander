@@ -21,7 +21,7 @@ def untrack(quiet: bool = False):
                 db.get(proton_dir, proton_ver).remove(current_dir)
 
     if not quiet:
-        print("Directory removed from all user lists.")
+        print("Directory removed from all tracking lists.")
 
 
 def track(
@@ -32,7 +32,7 @@ def track(
 
     if proton_ver is None:
         proton_ver: ProtonVer = get_selection(
-            "Select Proton version to add directory as user:",
+            "Select Proton version to track directory with:",
             None,
             collect_proton_versions(sort=True),
         ).as_proton_ver()
@@ -43,7 +43,7 @@ def track(
 
     if not quiet:
         print(
-            f"Directory {current_directory} added to Proton version's {proton_ver.version_num} in {proton_ver.dir} user list."
+            f"Directory {current_directory} added to Proton version's {proton_ver.version_num} in {proton_ver.dir} tracking list."
         )
 
 
@@ -57,10 +57,10 @@ def users():
     if proton_ver.dir in db.get() and proton_ver.version_num in db.get(proton_ver.dir):
         version_users: list[str] = db.get(proton_ver.dir, proton_ver.version_num)
         if len(version_users) > 0:
-            print(f"Directories using {proton_ver.version_num} of {proton_ver.dir}:")
+            print(f"Directories tracked by {proton_ver.version_num} of {proton_ver.dir}:")
             print(*version_users, sep="\n")
         else:
-            print("No directories currently use this version.")
+            print("This version is tracking no directories.")
     else:
         print("This version hasn't been used by umu before.")
 
@@ -73,7 +73,7 @@ def delete():
 
             if len(version_users) == 0:
                 selection: str = input(
-                    f"{proton_ver} in {proton_dir} has no using directories, delete? (Y/N) ? "
+                    f"Version {proton_ver} in {proton_dir} is tracking no directories, delete? (Y/N) ? "
                 )
                 if selection.lower() == "y":
                     try:

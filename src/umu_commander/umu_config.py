@@ -54,7 +54,7 @@ def create():
     ]
     selected: set[int] = set()
     while True:
-        print("Select DLLs to override, you can select multiple:")
+        print("Select DLLs to override, multiple can be selected:")
         for idx, override in enumerate(possible_overrides):
             if idx in selected:
                 idx = "Y"
@@ -122,21 +122,23 @@ def create():
         if not selected_umu_latest:
             tracking.track(proton_ver, False)
     except:
-        print("Could not create configiguration file.")
+        print("Could not create configuration file.")
 
 
 def run():
-    try:
-        with open(config.UMU_CONFIG_NAME, "rb") as toml_file:
-            toml_conf = tomllib.load(toml_file)
-
-            if not os.path.exists(toml_conf["umu"]["prefix"]):
-                os.mkdir(toml_conf["umu"]["prefix"])
-
-            os.environ.update(toml_conf.get("env", {}))
-            subprocess.run(
-                args=["umu-run", "--config", config.UMU_CONFIG_NAME],
-                env=os.environ,
-            )
-    except FileNotFoundError:
+    if not os.path.exists(config.UMU_CONFIG_NAME):
         print("No umu config in current directory.")
+        return
+
+    with open(config.UMU_CONFIG_NAME, "rb") as toml_file:
+        toml_conf = tomllib.load(toml_file)
+
+        if not os.path.exists(toml_conf["umu"]["prefix"]):
+            os.mkdir(toml_conf["umu"]["prefix"])
+
+        os.environ.update(toml_conf.get("env", {}))
+        subprocess.run(
+            args=["umu-run", "--config", config.UMU_CONFIG_NAME],
+            env=os.environ,
+        )
+
