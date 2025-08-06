@@ -1,13 +1,14 @@
 import os
 import tomllib
 from pathlib import Path
+from typing import Any
 
 import tomli_w
 
 from umu_commander.classes import DLLOverride
 
-_CONFIG_DIR: str = os.path.join(Path.home(), ".config")
-_CONFIG_NAME: str = "umu-commander.toml"
+CONFIG_DIR: str = os.path.join(Path.home(), ".config")
+CONFIG_NAME: str = "umu-commander.toml"
 
 
 PROTON_PATHS: tuple[str, ...] = (
@@ -27,10 +28,11 @@ DLL_OVERRIDES_OPTIONS: tuple[DLLOverride, ...] = (
 
 
 def load():
-    if not os.path.exists(os.path.join(_CONFIG_DIR, _CONFIG_NAME)):
+    config_path: str = os.path.join(CONFIG_DIR, CONFIG_NAME)
+    if not os.path.exists(config_path):
         return
 
-    with open(os.path.join(_CONFIG_DIR, _CONFIG_NAME), "rb") as conf_file:
+    with open(config_path, "rb") as conf_file:
         toml_conf = tomllib.load(conf_file)
         if "DLL_OVERRIDES_OPTIONS" in toml_conf:
             toml_conf["DLL_OVERRIDES_OPTIONS"] = tuple(
@@ -47,9 +49,9 @@ def load():
             setattr(module, key, value)
 
 
-def _get_attributes():
+def _get_attributes() -> dict[str, Any]:
     module = __import__(__name__)
-    attributes = {}
+    attributes: dict[str, Any] = {}
     for key in dir(module):
         value = getattr(module, key)
         if not key.startswith("_") and not callable(value) and key.upper() == key:
@@ -59,11 +61,14 @@ def _get_attributes():
 
 
 def dump():
-    if not os.path.exists(_CONFIG_DIR):
-        os.mkdir(_CONFIG_DIR)
+    if not os.path.exists(CONFIG_DIR):
+        os.mkdir(CONFIG_DIR)
 
-    with open(os.path.join(_CONFIG_DIR, _CONFIG_NAME), "wb") as conf_file:
+    with open(os.path.join(CONFIG_DIR, CONFIG_NAME), "wb") as conf_file:
         toml_conf = _get_attributes()
+        del toml_conf["CONFIG_DIR"]
+        del toml_conf["CONFIG_NAME"]
+
         toml_conf["DLL_OVERRIDES_OPTIONS"] = dict(
             [(override.info, override.value) for override in DLL_OVERRIDES_OPTIONS]
         )
