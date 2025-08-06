@@ -126,14 +126,17 @@ def create():
 
 
 def run():
-    with open(config.UMU_CONFIG_NAME, "rb") as toml_file:
-        toml_conf = tomllib.load(toml_file)
+    try:
+        with open(config.UMU_CONFIG_NAME, "rb") as toml_file:
+            toml_conf = tomllib.load(toml_file)
 
-        if not os.path.exists(toml_conf["umu"]["prefix"]):
-            os.mkdir(toml_conf["umu"]["prefix"])
+            if not os.path.exists(toml_conf["umu"]["prefix"]):
+                os.mkdir(toml_conf["umu"]["prefix"])
 
-        os.environ.update(toml_conf.get("env", {}))
-        subprocess.run(
-            args=["umu-run", "--config", config.UMU_CONFIG_NAME],
-            env=os.environ,
-        )
+            os.environ.update(toml_conf.get("env", {}))
+            subprocess.run(
+                args=["umu-run", "--config", config.UMU_CONFIG_NAME],
+                env=os.environ,
+            )
+    except FileNotFoundError:
+        print("No umu config in current directory.")
