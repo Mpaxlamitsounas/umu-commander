@@ -1,23 +1,14 @@
-#!/usr/bin/python3
 import os
 import sys
 from collections.abc import Callable
 from json import JSONDecodeError
 
-import umu_commander.configuration as config
-import umu_commander.database as db
+from umu_commander import configuration as config
+from umu_commander import database as db
 from umu_commander import tracking, umu_config
 from umu_commander.classes import ExitCode
 from umu_commander.configuration import CONFIG_DIR, CONFIG_NAME
-
-
-def print_help():
-    print(
-        "umu-commander is an interactive CLI tool to augment umu-launcher as well as help you manage its Proton versions.",
-        "",
-        "For details, usage, and more, see the README.md file, or visit https://github.com/Mpaxlamitsounas/umu-commander.",
-        sep="\n",
-    )
+from umu_commander.util import print_help
 
 
 def main() -> ExitCode:

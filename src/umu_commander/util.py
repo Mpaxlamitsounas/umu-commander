@@ -1,3 +1,4 @@
+from umu_commander import VERSION
 from umu_commander.classes import Element, ExitCode, Group, Value
 
 
@@ -90,4 +91,14 @@ def get_selection(
 
     return _translate_index_to_selection(
         selection_index, selection_elements, selection_groups
+    )
+
+
+def print_help():
+    print(
+        f"umu-commander {VERSION}",
+        "Interactive CLI tool to augment umu-launcher as well as help you manage its Proton versions.",
+        "",
+        "For details, usage, and more, see the README.md file, or visit https://github.com/Mpaxlamitsounas/umu-commander.",
+        sep="\n",
     )
