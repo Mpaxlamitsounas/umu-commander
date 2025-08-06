@@ -2,7 +2,7 @@ import json
 import os
 from collections import defaultdict
 
-from umu_commander.configuration import Configuration as config
+import umu_commander.configuration as config
 
 
 class Database:

@@ -7,7 +7,7 @@ import tomli_w
 
 from umu_commander import tracking
 from umu_commander.classes import DLLOverride, ProtonVer
-from umu_commander.configuration import Configuration as config
+import umu_commander.configuration as config
 from umu_commander.proton import collect_proton_versions, refresh_proton_versions
 from umu_commander.util import (
     get_selection,

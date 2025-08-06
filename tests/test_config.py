@@ -3,12 +3,12 @@ import unittest
 
 from tests import *
 from umu_commander import configuration
-from umu_commander.configuration import Configuration as config
+import umu_commander.configuration as config
 
 
 class Config(unittest.TestCase):
     def setUp(self):
-        configuration.CONFIG_DIR = TESTING_DIR
+        configuration._CONFIG_DIR = TESTING_DIR
         configuration.DB_DIR = TESTING_DIR
         setup()
 
@@ -18,6 +18,6 @@ class Config(unittest.TestCase):
     def test_missing_config(self):
         config.load()
         self.assertTrue(
-            os.path.exists(os.path.join(TESTING_DIR, configuration.CONFIG_NAME))
+            os.path.exists(os.path.join(TESTING_DIR, configuration._CONFIG_NAME))
         )
         config.load()

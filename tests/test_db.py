@@ -2,7 +2,7 @@ import unittest
 from json import JSONDecodeError
 
 from tests import *
-from umu_commander.configuration import Configuration as config
+import umu_commander.configuration as config
 from umu_commander.database import Database as db
 
 
