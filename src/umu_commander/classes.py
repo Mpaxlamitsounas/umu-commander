@@ -77,5 +77,5 @@ class ProtonDir(Group):
 
 class ExitCode(Enum):
     SUCCESS = 0
-    READING_ERROR = 1
+    DECODING_ERROR = 1
     INVALID_SELECTION = 2
