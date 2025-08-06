@@ -1,10 +1,10 @@
 import unittest
 
 import umu_commander.configuration as config
+import umu_commander.database as db
 from tests import *
 from umu_commander import tracking
 from umu_commander.classes import ProtonVer
-from umu_commander.database import Database as db
 
 
 class Tracking(unittest.TestCase):

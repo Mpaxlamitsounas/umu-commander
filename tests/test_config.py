@@ -8,7 +8,7 @@ from umu_commander import configuration
 
 class Config(unittest.TestCase):
     def setUp(self):
-        configuration._CONFIG_DIR = TESTING_DIR
+        configuration.CONFIG_DIR = TESTING_DIR
         configuration.DB_DIR = TESTING_DIR
         setup()
 
@@ -16,8 +16,8 @@ class Config(unittest.TestCase):
         teardown()
 
     def test_missing_config(self):
-        config.load()
+        config.dump()
         self.assertTrue(
-            os.path.exists(os.path.join(TESTING_DIR, configuration._CONFIG_NAME))
+            os.path.exists(os.path.join(TESTING_DIR, configuration.CONFIG_NAME))
         )
         config.load()

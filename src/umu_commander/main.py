@@ -4,10 +4,10 @@ import sys
 from json import JSONDecodeError
 
 import umu_commander.configuration as config
+import umu_commander.database as db
 from umu_commander import tracking, umu_config
 from umu_commander.classes import ExitCode
-from umu_commander.configuration import _CONFIG_DIR, _CONFIG_NAME
-from umu_commander.database import Database as db
+from umu_commander.configuration import CONFIG_DIR, CONFIG_NAME
 
 
 def print_help():
@@ -23,9 +23,9 @@ def main() -> ExitCode:
     try:
         config.load()
     except (JSONDecodeError, KeyError):
-        config_path: str = os.path.join(_CONFIG_DIR, _CONFIG_NAME)
+        config_path: str = os.path.join(CONFIG_DIR, CONFIG_NAME)
         print(f"Config file at {config_path} could not be read.")
-        os.rename(config_path, os.path.join(_CONFIG_DIR, _CONFIG_NAME + ".old"))
+        os.rename(config_path, os.path.join(CONFIG_DIR, CONFIG_NAME + ".old"))
 
     try:
         db.load()

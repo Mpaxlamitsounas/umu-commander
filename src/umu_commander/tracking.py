@@ -1,8 +1,8 @@
 import os
 import shutil
 
+import umu_commander.database as db
 from umu_commander.classes import ProtonDir, ProtonVer
-from umu_commander.database import Database as db
 from umu_commander.proton import (
     collect_proton_versions,
     get_latest_umu_proton,

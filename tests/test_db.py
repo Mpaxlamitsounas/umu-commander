@@ -2,21 +2,22 @@ import unittest
 from json import JSONDecodeError
 
 import umu_commander.configuration as config
+import umu_commander.database as db
 from tests import *
-from umu_commander.database import Database as db
 
 
 class Database(unittest.TestCase):
     def setUp(self):
         config.DB_DIR = TESTING_DIR
         setup()
+        db._reset()
 
     def tearDown(self):
         teardown()
 
     def test_missing_db(self):
         db.load()
-        self.assertEqual(db.get(), {})
+        self.assertEqual(db.get().keys(), {}.keys())
 
     def test_malformed_db(self):
         with open(os.path.join(config.DB_DIR, config.DB_NAME), "tw") as db_file:

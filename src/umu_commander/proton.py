@@ -3,8 +3,8 @@ import re
 import subprocess
 
 import umu_commander.configuration as config
+import umu_commander.database as db
 from umu_commander.classes import ProtonDir, ProtonVer
-from umu_commander.database import Database as db
 
 
 def _natural_sort_proton_ver_key(p: ProtonVer, _nsre=re.compile(r"(\d+)")):
