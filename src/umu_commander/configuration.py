@@ -29,11 +29,7 @@ DLL_OVERRIDES_OPTIONS: tuple[DLLOverride, ...] = (
 
 
 def load():
-    config_path: str = os.path.join(CONFIG_DIR, CONFIG_NAME)
-    if not os.path.exists(config_path):
-        return
-
-    with open(config_path, "rb") as conf_file:
+    with open(os.path.join(CONFIG_DIR, CONFIG_NAME), "rb") as conf_file:
         toml_conf = tomllib.load(conf_file)
         if "DLL_OVERRIDES_OPTIONS" in toml_conf:
             toml_conf["DLL_OVERRIDES_OPTIONS"] = tuple(

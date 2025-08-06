@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os
 import sys
+from collections.abc import Callable
 from json import JSONDecodeError
 
 import umu_commander.configuration as config
@@ -12,9 +13,9 @@ from umu_commander.configuration import CONFIG_DIR, CONFIG_NAME
 
 def print_help():
     print(
-        "umu-commander is an interactive CLI tool to help you manage Proton versions used by umu, as well as create enhanced launch configs.",
+        "umu-commander is an interactive CLI tool to augment umu-launcher as well as help you manage its Proton versions.",
         "",
-        "For details, explanations, and more, see the README.md file, or visit https://github.com/Mpaxlamitsounas/umu-commander.",
+        "For details, usage, and more, see the README.md file, or visit https://github.com/Mpaxlamitsounas/umu-commander.",
         sep="\n",
     )
 
@@ -24,42 +25,53 @@ def main() -> ExitCode:
         config.load()
     except (JSONDecodeError, KeyError):
         config_path: str = os.path.join(CONFIG_DIR, CONFIG_NAME)
+        old_config_path: str = os.path.join(CONFIG_DIR, CONFIG_NAME + ".old")
+
         print(f"Config file at {config_path} could not be read.")
-        os.rename(config_path, os.path.join(CONFIG_DIR, CONFIG_NAME + ".old"))
+
+        if not os.path.exists(old_config_path):
+            print(f"Config file renamed to {old_config_path}.")
+            os.rename(config_path, old_config_path)
+
+    except FileNotFoundError:
+        config.dump()
 
     try:
         db.load()
     except JSONDecodeError:
         db_path: str = os.path.join(config.DB_DIR, config.DB_NAME)
+        old_db_path: str = os.path.join(config.DB_DIR, config.DB_NAME + ".old")
+
         print(f"Tracking file at {db_path} could not be read.")
-        os.rename(db_path, os.path.join(config.DB_DIR, config.DB_NAME + ".old"))
+
+        if not os.path.exists(old_db_path):
+            print(f"DB file renamed to {old_db_path}.")
+            os.rename(db_path, old_db_path)
+
+    except FileNotFoundError:
+        pass
+
+    dispatch: dict[str, Callable] = {
+        "track": tracking.track,
+        "untrack": tracking.untrack,
+        "users": tracking.users,
+        "delete": tracking.delete,
+        "create": umu_config.create,
+        "run": umu_config.run,
+    }
 
     if len(sys.argv) == 1:
         print_help()
         return ExitCode.SUCCESS.value
+    elif sys.argv[1] not in dispatch:
+        print("Invalid verb.")
+        print_help()
+        return ExitCode.INVALID_SELECTION.value
 
-    verb: str = sys.argv[1]
-    match verb:
-        case "track":
-            tracking.track()
-        case "untrack":
-            tracking.untrack()
-        case "users":
-            tracking.users()
-        case "delete":
-            tracking.delete()
-        case "create":
-            umu_config.create()
-        case "run":
-            umu_config.run()
-        case _:
-            print("Invalid verb.")
-            print_help()
-            return ExitCode.INVALID_SELECTION.value
+    dispatch[sys.argv[1]]()
 
     tracking.untrack_unlinked()
     db.dump()
-    config.dump()
 
     return ExitCode.SUCCESS.value
 

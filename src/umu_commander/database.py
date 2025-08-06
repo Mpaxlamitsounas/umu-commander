@@ -15,11 +15,9 @@ def load():
     if not os.path.exists(config.DB_DIR):
         os.mkdir(config.DB_DIR)
 
-    db_path: str = os.path.join(config.DB_DIR, config.DB_NAME)
-    if not os.path.exists(db_path):
-        return
-
-    with open(os.path.join(db_path), "rt") as db_file:
+    with open(
+        os.path.join(os.path.join(config.DB_DIR, config.DB_NAME)), "rt"
+    ) as db_file:
         _db.update(json.load(db_file))
 
 
