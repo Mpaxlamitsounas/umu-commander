@@ -1,9 +1,9 @@
 import unittest
 
+import umu_commander.configuration as config
 from tests import *
 from umu_commander import proton
 from umu_commander.classes import Group
-import umu_commander.configuration as config
 
 
 class Tracking(unittest.TestCase):

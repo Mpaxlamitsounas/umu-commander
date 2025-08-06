@@ -1,8 +1,8 @@
 import unittest
 from json import JSONDecodeError
 
-from tests import *
 import umu_commander.configuration as config
+from tests import *
 from umu_commander.database import Database as db
 
 

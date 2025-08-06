@@ -1,9 +1,9 @@
 import os.path
 import unittest
 
+import umu_commander.configuration as config
 from tests import *
 from umu_commander import configuration
-import umu_commander.configuration as config
 
 
 class Config(unittest.TestCase):

@@ -2,8 +2,8 @@ import os
 import re
 import subprocess
 
-from umu_commander.classes import ProtonDir, ProtonVer
 import umu_commander.configuration as config
+from umu_commander.classes import ProtonDir, ProtonVer
 from umu_commander.database import Database as db
 
 

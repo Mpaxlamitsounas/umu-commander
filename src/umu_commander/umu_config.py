@@ -5,9 +5,9 @@ from typing import Any
 
 import tomli_w
 
+import umu_commander.configuration as config
 from umu_commander import tracking
 from umu_commander.classes import DLLOverride, ProtonVer
-import umu_commander.configuration as config
 from umu_commander.proton import collect_proton_versions, refresh_proton_versions
 from umu_commander.util import (
     get_selection,

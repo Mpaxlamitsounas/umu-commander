@@ -3,10 +3,10 @@ import os
 import sys
 from json import JSONDecodeError
 
+import umu_commander.configuration as config
 from umu_commander import tracking, umu_config
 from umu_commander.classes import ExitCode
 from umu_commander.configuration import _CONFIG_DIR, _CONFIG_NAME
-import umu_commander.configuration as config
 from umu_commander.database import Database as db
 
 

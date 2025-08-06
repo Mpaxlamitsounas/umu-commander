@@ -1,9 +1,9 @@
 import unittest
 
+import umu_commander.configuration as config
 from tests import *
 from umu_commander import tracking
 from umu_commander.classes import ProtonVer
-import umu_commander.configuration as config
 from umu_commander.database import Database as db
 
 
