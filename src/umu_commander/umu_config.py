@@ -38,13 +38,10 @@ def create():
     selected_umu_latest: bool = False
     proton_ver: ProtonVer = get_selection(
         "Select Proton version:",
-        strings_to_values(["Always latest UMU Proton"]),
+        None,
         collect_proton_versions(sort=True),
     ).as_proton_ver()
-    if proton_ver.version_num == "Always latest UMU Proton":
-        selected_umu_latest = True
-    else:
-        params["umu"]["proton"] = os.path.join(proton_ver.dir, proton_ver.version_num)
+    params["umu"]["proton"] = os.path.join(proton_ver.dir, proton_ver.version_num)
 
     # Select DLL overrides
     possible_overrides: list[DLLOverride] = [
@@ -119,8 +116,7 @@ def create():
 
         print(f"Configuration file {config.UMU_CONFIG_NAME} created at {os.getcwd()}.")
         print(f"Use by running umu-commander run.")
-        if not selected_umu_latest:
-            tracking.track(proton_ver, False)
+        tracking.track(proton_ver, False)
     except:
         print("Could not create configuration file.")
 
