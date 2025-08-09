@@ -1,5 +1,5 @@
 from umu_commander import VERSION
-from umu_commander.classes import Element, ExitCode, Group, Value
+from umu_commander.classes import Element, Group, Value
 
 
 def strings_to_values(values: list[str]) -> list[Value]:
@@ -59,7 +59,7 @@ def get_selection(
 ) -> Element:
     if not _selection_set_valid(selection_elements, selection_groups):
         print("Nothing to select from.")
-        exit(ExitCode.INVALID_SELECTION.value)
+        raise ValueError
 
     if selection_groups is None:
         selection_groups = []

@@ -14,30 +14,32 @@ from umu_commander.util import print_help
 def main() -> ExitCode:
     try:
         config.load()
+
     except (JSONDecodeError, KeyError):
         config_path: str = os.path.join(CONFIG_DIR, CONFIG_NAME)
-        old_config_path: str = os.path.join(CONFIG_DIR, CONFIG_NAME + ".old")
+        config_path_old: str = os.path.join(CONFIG_DIR, CONFIG_NAME + ".old")
 
         print(f"Config file at {config_path} could not be read.")
 
-        if not os.path.exists(old_config_path):
-            print(f"Config file renamed to {old_config_path}.")
-            os.rename(config_path, old_config_path)
+        if not os.path.exists(config_path_old):
+            print(f"Config file renamed to {config_path_old}.")
+            os.rename(config_path, config_path_old)
 
     except FileNotFoundError:
         config.dump()
 
     try:
         db.load()
+
     except JSONDecodeError:
         db_path: str = os.path.join(config.DB_DIR, config.DB_NAME)
-        old_db_path: str = os.path.join(config.DB_DIR, config.DB_NAME + ".old")
+        db_path_old: str = os.path.join(config.DB_DIR, config.DB_NAME + ".old")
 
         print(f"Tracking file at {db_path} could not be read.")
 
-        if not os.path.exists(old_db_path):
-            print(f"DB file renamed to {old_db_path}.")
-            os.rename(db_path, old_db_path)
+        if not os.path.exists(db_path_old):
+            print(f"DB file renamed to {db_path_old}.")
+            os.rename(db_path, db_path_old)
 
     except FileNotFoundError:
         pass
@@ -51,20 +53,29 @@ def main() -> ExitCode:
         "run": umu_config.run,
     }
 
-    if len(sys.argv) == 1:
+    try:
+        dispatch[sys.argv[1]]()
+
+    except IndexError:
         print_help()
-        return ExitCode.SUCCESS.value
-    elif sys.argv[1] not in dispatch:
-        print("Invalid verb.")
+        return_val = ExitCode.SUCCESS
+
+    except KeyError:
+        print("Unrecognised verb.")
         print_help()
-        return ExitCode.INVALID_SELECTION.value
+        return_val = ExitCode.INVALID_SELECTION
 
-    dispatch[sys.argv[1]]()
+    except ValueError:
+        return_val = ExitCode.INVALID_SELECTION
 
-    tracking.untrack_unlinked()
-    db.dump()
+    else:
+        return_val = ExitCode.SUCCESS
 
-    return ExitCode.SUCCESS.value
+    finally:
+        tracking.untrack_unlinked()
+        db.dump()
+
+    return return_val.value
 
 
 if __name__ == "__main__":
