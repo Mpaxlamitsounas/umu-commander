@@ -98,7 +98,9 @@ def get_selection(
                 return selection_elements[0]
 
             # len(selection_groups) == 1 and len(selection_groups[0].elements) == 1
-            groups_with_one_element: list[Group] = [group for group in selection_groups if len(group.elements) == 1]
+            groups_with_one_element: list[Group] = [
+                group for group in selection_groups if len(group.elements) == 1
+            ]
             if len(groups_with_one_element) == 1:
                 return groups_with_one_element[0].elements[0]
 
