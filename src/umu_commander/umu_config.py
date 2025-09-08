@@ -87,7 +87,7 @@ def create():
     lang_default: Value = string_to_value("Default")
     match get_selection(
         "Select locale:",
-        strings_to_values([lang_default, "Japanese"]),
+        [lang_default, string_to_value("Japanese")],
         None,
         default_element=lang_default,
     ).value:
