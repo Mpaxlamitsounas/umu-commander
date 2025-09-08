@@ -2,8 +2,12 @@ from umu_commander import VERSION
 from umu_commander.classes import Element, Group, Value
 
 
+def string_to_value(value: str) -> Value:
+    return Value(value)
+
+
 def strings_to_values(values: list[str]) -> list[Value]:
-    return [Value(value) for value in values]
+    return [string_to_value(value) for value in values]
 
 
 def _selection_set_valid(
@@ -56,6 +60,7 @@ def get_selection(
     prompt: str,
     selection_elements: list[Element] | None,
     selection_groups: list[Group] | None,
+    default_element: Element = None,
 ) -> Element:
     if not _selection_set_valid(selection_elements, selection_groups):
         print("Nothing to select from.")
@@ -82,15 +87,25 @@ def get_selection(
 
             enum_start_idx += len(group.elements)
 
-        selection_index: str = input("? ")
+        selection: str = input("? ")
         print("")
-        if selection_index.isdecimal():
-            selection_index: int = int(selection_index) - 1
-            if enum_start_idx - 1 > selection_index >= 0:
+        if selection == "":
+            if default_element is not None:
+                return default_element
+
+            # If only 1 choice
+            if len(selection_groups) == 0 and len(selection_elements) == 1:
+                return selection_elements[0]
+            elif len(selection_groups) == 1 and len(selection_groups[0].elements) == 1:
+                return selection_groups[0].elements[0]
+
+        elif selection.isdecimal():
+            selection: int = int(selection) - 1
+            if enum_start_idx - 1 > selection >= 0:
                 break
 
     return _translate_index_to_selection(
-        selection_index, selection_elements, selection_groups
+        selection, selection_elements, selection_groups
     )
 
 

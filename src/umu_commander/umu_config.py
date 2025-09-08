@@ -7,12 +7,9 @@ import tomli_w
 
 import umu_commander.configuration as config
 from umu_commander import tracking
-from umu_commander.classes import DLLOverride, ProtonVer
+from umu_commander.classes import DLLOverride, ProtonVer, Value
 from umu_commander.proton import collect_proton_versions, refresh_proton_versions
-from umu_commander.util import (
-    get_selection,
-    strings_to_values,
-)
+from umu_commander.util import get_selection, string_to_value, strings_to_values
 
 
 def create():
@@ -21,12 +18,12 @@ def create():
     params: dict[str, Any] = {"umu": {}, "env": {}}
 
     # Prefix selection
+    prefix_default: Value = string_to_value("Current directory")
     selection: str = get_selection(
         "Select wine prefix:",
-        strings_to_values(
-            [*os.listdir(config.DEFAULT_PREFIX_DIR), "Current directory"]
-        ),
+        [*strings_to_values(os.listdir(config.DEFAULT_PREFIX_DIR)), prefix_default],
         None,
+        default_element=prefix_default,
     ).value
 
     if selection == "Current directory":
@@ -57,20 +54,24 @@ def create():
                 idx = "Y"
             print(f"{idx}) {override.label}")
 
-        try:
-            index: int = int(input("? "))
-            print("")
-        except ValueError:
+        index: str = input("? ")
+        if index == "":
+            break
+
+        if index.isdecimal():
+            index: int = int(index)
+        else:
             continue
 
+        # reset
         if index == 0:
             selected = set()
             continue
 
+        # done
         if index == 1:
             break
 
-        index: int = int(index)
         if index - 1 < len(possible_overrides):
             selected.add(index)
 
@@ -83,10 +84,12 @@ def create():
             ].override_str
 
     # Set language locale
+    lang_default: Value = string_to_value("Default")
     match get_selection(
         "Select locale:",
-        strings_to_values(["Default", "Japanese"]),
+        strings_to_values([lang_default, "Japanese"]),
         None,
+        default_element=lang_default,
     ).value:
         case "Default":
             pass
