@@ -24,7 +24,7 @@ DB_DIR: str = os.path.join(Path.home(), ".local/share/umu/compatibilitytools")
 UMU_CONFIG_NAME: str = "umu-config.toml"
 DEFAULT_PREFIX_DIR: str = os.path.join(Path.home(), ".local/share/wineprefixes/")
 DLL_OVERRIDES_OPTIONS: tuple[DLLOverride, ...] = (
-    DLLOverride("winhttp for BepInEx", "winhttp.dll=n;"),
+    DLLOverride("winhttp for BepInEx", "winhttp.dll=n,b;"),
 )
 
 
