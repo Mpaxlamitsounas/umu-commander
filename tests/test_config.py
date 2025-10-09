@@ -1,4 +1,3 @@
-import os.path
 import unittest
 
 import umu_commander.configuration as config
@@ -17,7 +16,5 @@ class Config(unittest.TestCase):
 
     def test_missing_config(self):
         config.dump()
-        self.assertTrue(
-            (TESTING_DIR / configuration.CONFIG_NAME).exists()
-        )
+        self.assertTrue((TESTING_DIR / configuration.CONFIG_NAME).exists())
         config.load()

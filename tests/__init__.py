@@ -9,7 +9,7 @@ PROTON_DIR_2: Path = Path(TESTING_DIR / "proton_dir_2")
 USER_DIR: Path = Path(TESTING_DIR / "user_dir")
 
 PROTON_BIG: Path = PROTON_DIR_1 / "UMU_Proton_10"
-PROTON_SMALL: Path = PROTON_DIR_1 /"UMU_Proton_1"
+PROTON_SMALL: Path = PROTON_DIR_1 / "UMU_Proton_1"
 
 sys.path.insert(1, os.path.join(os.path.abspath(os.curdir), "src"))
 

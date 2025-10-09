@@ -31,9 +31,7 @@ def refresh_proton_versions():
             break
 
 
-def collect_proton_versions(
-    sort: bool = False
-) -> dict[Path, Iterable[Path]]:
+def collect_proton_versions(sort: bool = False) -> dict[Path, Iterable[Path]]:
     versions: dict[Path, Iterable[Path]] = {}
     for proton_dir in config.PROTON_PATHS:
         dir_versions = [version for version in proton_dir.iterdir() if version.is_dir()]

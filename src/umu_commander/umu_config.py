@@ -13,7 +13,8 @@ from umu_commander.classes import Element
 from umu_commander.configuration import DLL_OVERRIDES_OPTIONS, LANG_OVERRIDES_OPTIONS
 from umu_commander.proton import (
     collect_proton_versions,
-    get_latest_umu_proton, refresh_proton_versions,
+    get_latest_umu_proton,
+    refresh_proton_versions,
 )
 from umu_commander.util import build_choices
 

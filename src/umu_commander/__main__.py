@@ -1,6 +1,5 @@
 # import os
 import sys
-from collections.abc import Callable
 from json import JSONDecodeError
 from pathlib import Path
 
@@ -10,8 +9,6 @@ from umu_commander import tracking, umu_config
 from umu_commander.classes import ExitCode
 from umu_commander.configuration import CONFIG_DIR, CONFIG_NAME
 from umu_commander.util import print_help
-
-
 
 
 def init() -> ExitCode:
