@@ -1,117 +1,106 @@
 import os
 import subprocess
 import tomllib
+from pathlib import Path
 from typing import Any
 
 import tomli_w
+from InquirerPy import inquirer
 
 import umu_commander.configuration as config
 from umu_commander import tracking
-from umu_commander.classes import DLLOverride, ProtonVer, Value
-from umu_commander.proton import collect_proton_versions, refresh_proton_versions
-from umu_commander.util import get_selection, string_to_value, strings_to_values
+from umu_commander.classes import Element
+from umu_commander.configuration import DLL_OVERRIDES_OPTIONS, LANG_OVERRIDES_OPTIONS
+from umu_commander.proton import (
+    collect_proton_versions,
+    get_latest_umu_proton, refresh_proton_versions,
+)
+from umu_commander.util import build_choices
 
 
-def create():
+def select_prefix() -> str:
+    default = Element(str(Path.cwd() / "prefix"), "Current directory")
+    choices = build_choices([default, *config.DEFAULT_PREFIX_DIR.iterdir()], None)
+    return str(inquirer.select("Select wine prefix:", choices, default).execute())
+
+
+def select_proton() -> str:
+    default = Element(str(get_latest_umu_proton()), "Latest UMU-Proton")
+    choices = build_choices([default], collect_proton_versions(sort=True))
+    return str(
+        inquirer.select(
+            "Select Proton version:", choices, Path.cwd() / "prefix"
+        ).execute()
+    )
+
+
+def select_dll_override() -> str:
+    choices = build_choices(DLL_OVERRIDES_OPTIONS, None)
+    return "".join(
+        [
+            selection
+            for selection in inquirer.checkbox(
+                "Select DLLs to override:", choices
+            ).execute()
+        ]
+    )
+
+
+def select_lang() -> str:
+    default = Element("", "No override")
+    choices = build_choices([default, *LANG_OVERRIDES_OPTIONS], None)
+    return inquirer.select("Select locale:", choices, default).execute()
+
+
+def set_launch_args() -> list[str]:
+    options: str = inquirer.text(
+        "Enter executable options, separated by space:"
+    ).execute()
+    return [opt.strip() for opt in options.split(" ")]
+
+
+def select_exe() -> str:
+    files = [file for file in Path.cwd().iterdir() if file.is_file()]
+    choices = build_choices(files, None)
+    return inquirer.select("Select game executable:", choices).execute()
+
+
+def create(params: dict[str, dict[str, Any]], interactive: bool):
     refresh_proton_versions()
 
-    params: dict[str, Any] = {"umu": {}, "env": {}}
-
     # Prefix selection
-    prefix_default: Value = string_to_value("Current directory")
-    selection: str = get_selection(
-        "Select wine prefix:",
-        [*strings_to_values(os.listdir(config.DEFAULT_PREFIX_DIR)), prefix_default],
-        None,
-        default_element=prefix_default,
-    ).value
-
-    if selection == "Current directory":
-        params["umu"]["prefix"] = os.path.join(os.getcwd(), "prefix")
-    else:
-        params["umu"]["prefix"] = os.path.join(config.DEFAULT_PREFIX_DIR, selection)
+    if params.get("umu").get("prefix") is None:
+        if interactive:
+            params["umu"]["prefix"] = select_prefix()
+        else:
+            params["umu"]["prefix"] = str(Path.cwd() / "prefix")
 
     # Proton selection
-    selected_umu_latest: bool = False
-    proton_ver: ProtonVer = get_selection(
-        "Select Proton version:",
-        None,
-        collect_proton_versions(sort=True),
-    ).as_proton_ver()
-    params["umu"]["proton"] = os.path.join(proton_ver.dir, proton_ver.version_num)
+    if params.get("umu").get("proton") is None:
+        if interactive:
+            params["umu"]["proton"] = select_proton()
+        else:
+            params["umu"]["proton"] = str(get_latest_umu_proton())
+
+    selected_umu_latest: bool = params["umu"]["proton"] == str(get_latest_umu_proton())
 
     # Select DLL overrides
-    possible_overrides: list[DLLOverride] = [
-        DLLOverride(label="Reset"),
-        DLLOverride(label="Done"),
-        *config.DLL_OVERRIDES_OPTIONS,
-    ]
-    selected: set[int] = set()
-    while True:
-        print("Select DLLs to override, multiple can be selected:")
-        for idx, override in enumerate(possible_overrides):
-            if idx in selected:
-                idx = "Y"
-            print(f"{idx}) {override.label}")
-
-        index: str = input("? ")
-        if index == "":
-            break
-
-        if index.isdecimal():
-            index: int = int(index)
-        else:
-            continue
-
-        # reset
-        if index == 0:
-            selected = set()
-            continue
-
-        # done
-        if index == 1:
-            break
-
-        if index - 1 < len(possible_overrides):
-            selected.add(index)
-
-    if len(selected) > 0:
-        params["env"]["WINEDLLOVERRIDES"] = ""
-        for selection in selected:
-            # noinspection PyTypeChecker
-            params["env"]["WINEDLLOVERRIDES"] += possible_overrides[
-                selection
-            ].override_str
+    if interactive:
+        params["env"]["WINEDLLOVERRIDES"] = select_dll_override()
+        print(params["env"]["WINEDLLOVERRIDES"])
 
     # Set language locale
-    lang_default: Value = string_to_value("Default")
-    match get_selection(
-        "Select locale:",
-        [lang_default, string_to_value("Japanese")],
-        None,
-        default_element=lang_default,
-    ).value:
-        case "Default":
-            pass
-        case "Japanese":
-            params["env"]["LANG"] = "ja_JP.UTF8"
+    if interactive:
+        if (lang := select_lang()) != "":
+            params["env"]["LANG"] = lang
 
     # Input executable launch args
-    launch_args: list[str] = input(
-        "Enter executable options, separated by spaces:\n? "
-    ).split()
-    params["umu"]["launch_args"] = launch_args
+    if interactive:
+        params["umu"]["launch_args"] = set_launch_args()
 
     # Select executable name
-    files: list[str] = [
-        file
-        for file in os.listdir(os.getcwd())
-        if os.path.isfile(os.path.join(os.getcwd(), file))
-    ]
-    executable_name: str = get_selection(
-        "Select game executable:", strings_to_values(files), None
-    ).value
-    params["umu"]["exe"] = executable_name
+    if params["umu"].get("exe") is None:
+        params["umu"]["exe"] = select_exe()
 
     try:
         with open(config.UMU_CONFIG_NAME, "wb") as file:
@@ -119,21 +108,26 @@ def create():
 
         print(f"Configuration file {config.UMU_CONFIG_NAME} created at {os.getcwd()}.")
         print(f"Use by running umu-commander run.")
-        tracking.track(proton_ver, False)
+        if not selected_umu_latest:
+            tracking.track(
+                Path(params["umu"]["proton"], Path(params["umu"]["exe"])).parent,
+                refresh_versions=False,
+            )
     except:
         print("Could not create configuration file.")
 
 
 def run():
-    if not os.path.exists(config.UMU_CONFIG_NAME):
+    if not config.UMU_CONFIG_NAME.exists():
         print("No umu config in current directory.")
         return
 
     with open(config.UMU_CONFIG_NAME, "rb") as toml_file:
         toml_conf = tomllib.load(toml_file)
 
-        if not os.path.exists(toml_conf["umu"]["prefix"]):
-            os.mkdir(toml_conf["umu"]["prefix"])
+        prefix_path = Path(toml_conf["umu"]["prefix"])
+        if not prefix_path.exists():
+            prefix_path.mkdir()
 
         os.environ.update(toml_conf.get("env", {}))
         subprocess.run(

@@ -1,14 +1,13 @@
-import os
 import re
 import subprocess
+from collections.abc import Iterable
+from pathlib import Path
 
 import umu_commander.configuration as config
-import umu_commander.database as db
-from umu_commander.classes import ProtonDir, ProtonVer
 
 
-def _natural_sort_proton_ver_key(p: ProtonVer, _nsre=re.compile(r"(\d+)")):
-    s: str = p.version_num
+def _natural_sort_proton_ver_key(p: Path, _nsre=re.compile(r"(\d+)")):
+    s: str = p.name
     return [int(text) if text.isdigit() else text for text in _nsre.split(s)]
 
 
@@ -32,51 +31,37 @@ def refresh_proton_versions():
             break
 
 
-def _sort_proton_versions(versions: list[ProtonVer]) -> list[ProtonVer]:
-    return sorted(versions, key=_natural_sort_proton_ver_key, reverse=True)
-
-
 def collect_proton_versions(
-    sort: bool = False, user_count: bool = False
-) -> list[ProtonDir]:
-    def get_user_count(proton_dir: str, proton_ver) -> str:
-        return (
-            "(" + str(len(db.get(proton_dir, proton_ver))) + ")"
-            if proton_ver in db.get(proton_dir)
-            else "(-)"
-        )
-
-    proton_dirs: list[ProtonDir] = []
+    sort: bool = False
+) -> dict[Path, Iterable[Path]]:
+    versions: dict[Path, Iterable[Path]] = {}
     for proton_dir in config.PROTON_PATHS:
-        versions: list[ProtonVer] = [
-            ProtonVer(
-                proton_dir,
-                version,
-                get_user_count(proton_dir, version) if user_count else "",
-            )
-            for version in os.listdir(proton_dir)
-            if os.path.isdir(os.path.join(proton_dir, version))
-        ]
+        dir_versions = [version for version in proton_dir.iterdir() if version.is_dir()]
+        if len(dir_versions) == 0:
+            continue
+        else:
+            versions[proton_dir] = dir_versions
 
         if sort:
-            versions = sorted(versions, key=_natural_sort_proton_ver_key, reverse=True)
+            versions[proton_dir] = sorted(
+                versions[proton_dir], key=_natural_sort_proton_ver_key, reverse=True
+            )
 
-        proton_dirs.append(
-            ProtonDir(proton_dir, f"Proton versions in {proton_dir}:", versions)
-        )
-
-    return proton_dirs
+    return versions
 
 
-def get_latest_umu_proton():
-    umu_proton_versions: list[ProtonVer] = [
-        ProtonVer(config.UMU_PROTON_PATH, version)
-        for version in os.listdir(config.UMU_PROTON_PATH)
-        if "UMU" in version
-        and os.path.isdir(os.path.join(config.UMU_PROTON_PATH, version))
+def get_latest_umu_proton() -> Path | None:
+    umu_proton_versions: list[Path] = [
+        config.UMU_PROTON_PATH / proton_ver
+        for proton_ver in config.UMU_PROTON_PATH.iterdir()
+        if "UMU" in proton_ver.name and (config.UMU_PROTON_PATH / proton_ver).is_dir()
     ]
+
+    if len(umu_proton_versions) == 0:
+        return None
+
     umu_proton_versions = sorted(
         umu_proton_versions, key=_natural_sort_proton_ver_key, reverse=True
     )
 
-    return umu_proton_versions[0].version_num
+    return umu_proton_versions[0]

@@ -1,64 +1,75 @@
 import os
 import shutil
+from pathlib import Path
+
+from InquirerPy import inquirer
 
 import umu_commander.database as db
-from umu_commander.classes import ProtonDir, ProtonVer
 from umu_commander.proton import (
     collect_proton_versions,
     get_latest_umu_proton,
     refresh_proton_versions,
 )
 from umu_commander.util import (
-    get_selection,
+    build_choices,
 )
 
 
-def untrack(quiet: bool = False):
-    current_dir: str = os.getcwd()
+def untrack(target_dir: Path = None, *, quiet: bool = False):
+    if target_dir is None:
+        target_dir = Path.cwd()
+
     for proton_dir in db.get().keys():
         for proton_ver in db.get(proton_dir):
-            if current_dir in db.get(proton_dir, proton_ver):
-                db.get(proton_dir, proton_ver).remove(current_dir)
+            if target_dir in db.get(proton_dir, proton_ver):
+                db.get(proton_dir, proton_ver).remove(target_dir)
 
     if not quiet:
         print("Directory removed from all tracking lists.")
 
 
 def track(
-    proton_ver: ProtonVer = None, refresh_versions: bool = True, quiet: bool = False
+    proton_ver: Path = None,
+    target_dir: Path = None,
+    *,
+    refresh_versions: bool = True,
+    quiet: bool = False,
 ):
-    if refresh_versions:
+    if target_dir is None:
+        target_dir = Path.cwd()
+
+    if refresh_versions and proton_ver is None:
         refresh_proton_versions()
 
     if proton_ver is None:
-        proton_ver: ProtonVer = get_selection(
-            "Select Proton version to track directory with:",
-            None,
-            collect_proton_versions(sort=True),
-        ).as_proton_ver()
+        proton_dirs = collect_proton_versions(sort=True)
+        choices = build_choices(None, proton_dirs)
+        proton_ver: Path = inquirer.select(
+            "Select Proton version to track directory with:", choices
+        ).execute()
 
     untrack(quiet=True)
-    current_directory: str = os.getcwd()
-    db.get(proton_ver.dir, proton_ver.version_num).append(current_directory)
+    db.get(proton_ver.parent, proton_ver).append(target_dir)
 
     if not quiet:
         print(
-            f"Directory {current_directory} added to Proton version's {proton_ver.version_num} in {proton_ver.dir} tracking list."
+            f"Directory {target_dir} added to Proton version's {proton_ver.name} in {proton_ver.parent} tracking list."
         )
 
 
-def users():
-    proton_dirs: list[ProtonDir] = collect_proton_versions(sort=True, user_count=True)
+def users(proton_ver: Path = None):
+    if proton_ver is None:
+        proton_dirs = collect_proton_versions(sort=True)
+        choices = build_choices(None, proton_dirs, count_elements=True)
+        proton_ver: Path = inquirer.select(
+            "Select Proton version to view user list:", choices
+        ).execute()
 
-    proton_ver: ProtonVer = get_selection(
-        "Select Proton version to view user list:", None, proton_dirs
-    ).as_proton_ver()
-
-    if proton_ver.dir in db.get() and proton_ver.version_num in db.get(proton_ver.dir):
-        version_users: list[str] = db.get(proton_ver.dir, proton_ver.version_num)
+    if proton_ver.parent in db.get() and proton_ver in db.get(proton_ver.parent):
+        version_users: list[Path] = db.get(proton_ver.parent, proton_ver)
         if len(version_users) > 0:
             print(
-                f"Directories tracked by {proton_ver.version_num} of {proton_ver.dir}:",
+                f"Directories tracked by {proton_ver.name} of {proton_ver.parent}:",
                 *version_users,
                 sep="\n\t",
             )
@@ -77,12 +88,12 @@ def delete():
                 continue
 
             if len(version_users) == 0:
-                selection: str = input(
-                    f"Version {proton_ver} in {proton_dir} is tracking no directories, delete? (Y/N) ? "
-                )
-                if selection.lower() == "y":
+                confirmed: bool = inquirer.confirm(
+                    f"Version {proton_ver.name} in {proton_dir} is tracking no directories, delete?"
+                ).execute()
+                if confirmed:
                     try:
-                        shutil.rmtree(os.path.join(proton_dir, proton_ver))
+                        shutil.rmtree(proton_dir / proton_ver)
                     except FileNotFoundError:
                         pass
                     del db.get(proton_dir)[proton_ver]
@@ -92,5 +103,5 @@ def untrack_unlinked():
     for proton_dir in db.get().keys():
         for proton_ver, version_users in db.get()[proton_dir].items():
             for user in version_users:
-                if not os.path.exists(user):
+                if not user.exists():
                     db.get(proton_dir, proton_ver).remove(user)

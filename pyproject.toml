@@ -16,7 +16,8 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
 ]
 dependencies = [
-    "tomli-w"
+    "tomli-w",
+    "InquirerPy"
 ]
 
 license = "MIT"
