@@ -1,5 +1,7 @@
 ## umu-commander
-### umu-commander is an interactive CLI tool to augment umu-launcher as well as help you manage its Proton versions.
+### umu-commander is a CLI tool to augment umu-launcher as well as help you manage its Proton versions.
+
+This tool does not provide a centralised way of managing your games or utilise template umu-configs. See [faugus-launcher](https://github.com/Faugus/faugus-launcher) or [Nero-umu](https://github.com/SeongGino/Nero-umu) for something more akin to a games launcher, and [umu-wrapper](https://github.com/korewaChino/umu-wrapper) for templating functionality. 
 
 Proton versions can track and untrack directories, with the intention of safely removing them once no game depends on one.
 
@@ -10,17 +12,18 @@ The configuration file lives at `~/.config/umu-commander.toml`, which cannot be 
 
 The config schema is as follows:
 
-| Name                      | Description                                                        |
-|:--------------------------|:-------------------------------------------------------------------|
-| `PROTON_PATHS`            | List of directories umu-commander will search for Proton versions. |
-| `UMU_PROTON_PATH`         | Directory where umu-launcher downloads its UMU-Proton versions.    |
-| `DB_NAME`                 | Tracking DB filename.                                              |
-| `DB_DIR`                  | Directory where the Tracking DB is stored.                         |
-| `UMU_CONFIG_NAME`         | Name of the umu config created using umu-commander create.         |
-| `DEFAULT_PREFIX_DIR`      | Directory where umu-commander will search for WINE prefixes.       |
-| `[DLL_OVERRIDES_OPTIONS]` | TOML table where all possible DLL overrides are listed.            |
+| Name                       | Description                                                        |
+|:---------------------------|:-------------------------------------------------------------------|
+| `DB_DIR`                   | Directory where the Tracking DB is stored.                         |
+| `DB_NAME`                  | Tracking DB filename.                                              |
+| `DEFAULT_PREFIX_DIR`       | Directory where umu-commander will search for WINE prefixes.       |
+| `PROTON_PATHS`             | List of directories umu-commander will search for Proton versions. |
+| `UMU_CONFIG_NAME`          | Name of the umu config created using umu-commander create.         |
+| `UMU_PROTON_PATH`          | Directory where umu-launcher downloads its UMU-Proton versions.    |
+| `[DLL_OVERRIDES_OPTIONS]`  | TOML table where all possible DLL overrides are listed.            |
+| `[LANG_OVERRIDES_OPTIONS]` | TOML table where all possible LANG overrides are listed.           |
 
-To add an extra DLL override option, add a line below the table in the form "`Label`" = "`WINE override string`". Use the winhttp example as a template.
+To add an extra DLL override option, add a line below the table in the form "`Label`" = "`WINE DLL override string`". Use the winhttp example as an example. You can add LANG overrides in a similar way.
 
 ### Verbs
 umu-commander needs one of the following verbs specified after the executable name:
