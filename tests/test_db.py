@@ -24,7 +24,7 @@ class Database(unittest.TestCase):
         self.assertEqual(db.get().keys(), {}.keys())
 
     def test_malformed_db(self):
-        with open(os.path.join(config.DB_DIR, config.DB_NAME), "tw") as db_file:
+        with open(config.DB_DIR / config.DB_NAME, "tw") as db_file:
             db_file.write("{")
 
         with self.assertRaises(JSONDecodeError):

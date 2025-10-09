@@ -1,14 +1,15 @@
 import os
 import shutil
 import sys
+from pathlib import Path
 
-TESTING_DIR: str = os.path.abspath(os.path.join(os.curdir, "testing"))
-PROTON_DIR_1: str = os.path.join(TESTING_DIR, "proton_dir_1")
-PROTON_DIR_2: str = os.path.join(TESTING_DIR, "proton_dir_2")
-USER_DIR: str = os.path.join(TESTING_DIR, "user_dir")
+TESTING_DIR: Path = Path(os.curdir + "testing").absolute()
+PROTON_DIR_1: Path = Path(TESTING_DIR / "proton_dir_1")
+PROTON_DIR_2: Path = Path(TESTING_DIR / "proton_dir_2")
+USER_DIR: Path = Path(TESTING_DIR / "user_dir")
 
-PROTON_BIG: str = "UMU_Proton_10"
-PROTON_SMALL: str = "UMU_Proton_1"
+PROTON_BIG: Path = PROTON_DIR_1 / "UMU_Proton_10"
+PROTON_SMALL: Path = PROTON_DIR_1 /"UMU_Proton_1"
 
 sys.path.insert(1, os.path.join(os.path.abspath(os.curdir), "src"))
 
@@ -18,12 +19,12 @@ def teardown():
 
 
 def setup():
-    if os.path.exists(TESTING_DIR):
+    if TESTING_DIR.exists():
         teardown()
 
-    os.mkdir(TESTING_DIR)
-    os.mkdir(PROTON_DIR_1)
-    os.mkdir(os.path.join(PROTON_DIR_1, PROTON_BIG))
-    os.mkdir(os.path.join(PROTON_DIR_1, PROTON_SMALL))
-    os.mkdir(PROTON_DIR_2)
-    os.mkdir(USER_DIR)
+    TESTING_DIR.mkdir()
+    PROTON_DIR_1.mkdir()
+    PROTON_BIG.mkdir()
+    PROTON_SMALL.mkdir()
+    PROTON_DIR_2.mkdir()
+    USER_DIR.mkdir()

@@ -4,7 +4,6 @@ import umu_commander.configuration as config
 import umu_commander.database as db
 from tests import *
 from umu_commander import tracking
-from umu_commander.classes import ProtonVer
 
 
 class Tracking(unittest.TestCase):
@@ -18,7 +17,8 @@ class Tracking(unittest.TestCase):
     def test_track_untrack(self):
         os.chdir(USER_DIR)
 
-        tracking.track(ProtonVer(PROTON_DIR_1, PROTON_BIG), refresh_versions=False)
+        tracking.track(PROTON_DIR_1 / PROTON_BIG, refresh_versions=False)
+
         self.assertIn(PROTON_BIG, db.get(PROTON_DIR_1))
         self.assertIn(USER_DIR, db.get(PROTON_DIR_1, PROTON_BIG))
 
@@ -29,11 +29,11 @@ class Tracking(unittest.TestCase):
     def test_track_auto_untrack(self):
         os.chdir(USER_DIR)
 
-        tracking.track(ProtonVer(PROTON_DIR_1, PROTON_BIG), refresh_versions=False)
+        tracking.track(PROTON_DIR_1 / PROTON_BIG, refresh_versions=False)
         self.assertIn(PROTON_BIG, db.get(PROTON_DIR_1))
         self.assertIn(USER_DIR, db.get(PROTON_DIR_1, PROTON_BIG))
 
-        os.rmdir(USER_DIR)
+        USER_DIR.rmdir()
         tracking.untrack_unlinked()
         self.assertIn(PROTON_BIG, db.get(PROTON_DIR_1))
         self.assertNotIn(

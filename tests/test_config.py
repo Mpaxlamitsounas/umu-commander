@@ -18,6 +18,6 @@ class Config(unittest.TestCase):
     def test_missing_config(self):
         config.dump()
         self.assertTrue(
-            os.path.exists(os.path.join(TESTING_DIR, configuration.CONFIG_NAME))
+            (TESTING_DIR / configuration.CONFIG_NAME).exists()
         )
         config.load()
