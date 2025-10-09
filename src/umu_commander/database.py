@@ -23,6 +23,7 @@ def load():
             for proton_ver, proton_users in proton_vers.items():
                 proton_ver = proton_dir / proton_ver
                 db[proton_dir][proton_ver] = [Path(user) for user in proton_users]
+        # noinspection PyTypeChecker
         _db.update(db)
 
 
