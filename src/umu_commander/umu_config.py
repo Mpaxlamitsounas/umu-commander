@@ -63,7 +63,7 @@ def set_launch_args() -> list[str]:
 def select_exe() -> str:
     files = [file for file in Path.cwd().iterdir() if file.is_file()]
     choices = build_choices(files, None)
-    return inquirer.select("Select game executable:", choices).execute()
+    return str(inquirer.select("Select game executable:", choices).execute())
 
 
 def create(params: dict[str, dict[str, Any]], interactive: bool):
