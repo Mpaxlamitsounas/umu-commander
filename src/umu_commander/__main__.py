@@ -1,7 +1,8 @@
-# import os
 import sys
 from json import JSONDecodeError
 from pathlib import Path
+
+from InquirerPy.exceptions import InvalidArgument
 
 from umu_commander import configuration as config
 from umu_commander import database as db
@@ -75,6 +76,10 @@ def main() -> int:
     except IndexError:
         print_help()
         return ExitCode.SUCCESS.value
+
+    except InvalidArgument:
+        print("No choices to select from.")
+        return ExitCode.INVALID_SELECTION.value
 
     else:
         return ExitCode.SUCCESS.value
