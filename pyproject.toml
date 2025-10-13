@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "umu-commander"
 dynamic = ["version"]
 authors = [
-    { name = "Mpaxlamitsounas", email = "worldstudy123@gmail.com" },
+    { name = "Mpaxlamitsounas", email = "mpaxlamitsounas@mailbox.org" },
 ]
 description = "umu-commander is an interactive CLI tool to help you manage umu."
 readme = "README.md"
