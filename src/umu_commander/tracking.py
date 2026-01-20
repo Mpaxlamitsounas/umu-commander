@@ -33,7 +33,7 @@ def untrack(target_dir: Path = None, *, quiet: bool = False):
                 db.get(proton_dir, proton_ver).remove(target_dir)
 
     if not quiet:
-        print("Directory removed from all tracking lists.")
+        print("Config removed from all tracking lists.")
 
 
 def track(
@@ -58,7 +58,7 @@ def track(
         proton_dirs = collect_proton_versions(sort=True)
         choices = build_choices(None, proton_dirs)
         proton_ver: Path = inquirer.select(
-            "Select Proton version to track directory with:", choices
+            "Select Proton version to track config with:", choices
         ).execute()
 
     proton_ver = proton_ver.absolute()
@@ -69,7 +69,7 @@ def track(
 
     if not quiet:
         print(
-            f"Directory {config} added to Proton version's {proton_ver.name} in {proton_ver.parent} tracking list."
+            f"Config {config} added to Proton version's {proton_ver.name} in {proton_ver.parent} tracking list."
         )
 
 
@@ -93,7 +93,7 @@ def users(proton_ver: Path = None):
             )
 
         else:
-            print("This version is tracking no directories.")
+            print("This version is tracking no configs.")
 
     else:
         print("This version hasn't been used by umu before.")
