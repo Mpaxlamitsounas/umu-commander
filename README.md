@@ -18,7 +18,7 @@ The config schema is as follows:
 | `DB_NAME`                  | Tracking DB filename.                                              |
 | `DEFAULT_PREFIX_DIR`       | Directory where umu-commander will search for WINE prefixes.       |
 | `PROTON_PATHS`             | List of directories umu-commander will search for Proton versions. |
-| `UMU_CONFIG_NAME`          | Name of the umu config created using umu-commander create.         |
+| `DEFAULT_UMU_CONFIG_NAME`  | Default name of the umu config created using umu-commander create. |
 | `UMU_PROTON_PATH`          | Directory where umu-launcher downloads its UMU-Proton versions.    |
 | `[DLL_OVERRIDES_OPTIONS]`  | TOML table where all possible DLL overrides are listed.            |
 | `[LANG_OVERRIDES_OPTIONS]` | TOML table where all possible LANG overrides are listed.           |
@@ -30,12 +30,13 @@ umu-commander needs one of the following verbs specified after the executable na
 
 | Name      | Description                                                                                                                                                                                                                                                                  |
 |:----------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `track`   | Tracks current directory with the selected Proton version.<br/>Also removes it from any other tracking lists.                                                                                                                                                                |
-| `untrack` | Removes the current directory from all tracking lists.                                                                                                                                                                                                                       |
-| `users`   | Lists which directories the selected Proton version is tracking.                                                                                                                                                                                                             |
+| `track`   | Tracks selected config with the selected Proton version.<br/>Also removes it from any other tracking lists.                                                                                                                                                                  |
+| `untrack` | Removes the selected config from all tracking lists.                                                                                                                                                                                                                         |
+| `users`   | Lists which configs the selected Proton version is tracking.                                                                                                                                                                                                                 |
 | `delete`  | Interactively deletes Proton versions that are currently tracking nothing.<br/>Will not remove the latest UMU-Proton and Proton versions that haven't been used for tracking before.<br/>umu-commander will never delete anything without invoking this verb and confirming. |
 | `create`  | Creates an augmented umu config in the current directory.<br/>These configs are compatible with vanilla umu-launcher, although the DLL override functionality won't work.                                                                                                    |
-| `run`     | Runs a program using the umu config in the current directory.                                                                                                                                                                                                                |
+| `run`     | Runs a program using the umu config selected.                                                                                                                                                                                                                                |
+| `fix`     | Attempts to fix invalid paths created from moving configs around.                                                                                                                                                                                                            |
 
 ### Installation/Usage
 Add umu-run to your PATH and then install with pipx by running `pipx install umu-commander`. After that you can use umu-commander by running `umu-commander <verb>`. 
