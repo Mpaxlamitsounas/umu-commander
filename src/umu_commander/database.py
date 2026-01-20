@@ -37,7 +37,7 @@ def dump():
         db[proton_dir] = {}
         for proton_ver, proton_users in proton_vers.items():
             proton_ver = proton_ver.name
-            db[proton_dir][proton_ver] = [str(user) for user in proton_users]
+            db[proton_dir][proton_ver] = list(dict.fromkeys([str(user) for user in proton_users]))
 
     with open(config.DB_DIR / config.DB_NAME, "wt") as db_file:
         # noinspection PyTypeChecker
