@@ -195,8 +195,11 @@ def fix(umu_config: Path = None):
     prefix = Path(toml_conf["umu"]["prefix"])
     db.get(proton.parent, proton).append(umu_config)
     if not prefix.exists():
-        toml_conf["umu"]["prefix"] = base_dir / prefix.name
+        toml_conf["umu"]["prefix"] = str(base_dir / prefix.name)
 
-    exe = Path(toml_conf["umu"]["prefix"])
-    if not exe.exists():
-        toml_conf["umu"]["exe"] = base_dir / exe.name
+    exe = Path(toml_conf["umu"]["exe"])
+    if not exe.exists() and exe.is_absolute():
+        toml_conf["umu"]["exe"] = str(base_dir / exe.name)
+
+    with open(umu_config, "wb") as toml_file:
+        tomli_w.dump(toml_conf, toml_file)
