@@ -51,6 +51,7 @@ def init() -> ExitCode:
 
     return ExitCode.SUCCESS
 
+
 def get_parser_results() -> tuple[ArgumentParser, Namespace]:
     parser = argparse.ArgumentParser(
         prog=f"umu-commander",

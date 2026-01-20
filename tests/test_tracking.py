@@ -18,10 +18,14 @@ class Tracking(unittest.TestCase):
     def test_track_untrack(self):
         os.chdir(USER_DIR)
 
-        tracking.track(PROTON_DIR_1 / PROTON_BIG, DEFAULT_UMU_CONFIG_NAME, refresh_versions=False)
+        tracking.track(
+            PROTON_DIR_1 / PROTON_BIG, DEFAULT_UMU_CONFIG_NAME, refresh_versions=False
+        )
 
         self.assertIn(PROTON_BIG, db.get(PROTON_DIR_1))
-        self.assertIn(USER_DIR / DEFAULT_UMU_CONFIG_NAME, db.get(PROTON_DIR_1, PROTON_BIG))
+        self.assertIn(
+            USER_DIR / DEFAULT_UMU_CONFIG_NAME, db.get(PROTON_DIR_1, PROTON_BIG)
+        )
 
         tracking.untrack(quiet=True)
         self.assertIn(PROTON_BIG, db.get(PROTON_DIR_1))
@@ -30,9 +34,13 @@ class Tracking(unittest.TestCase):
     def test_track_auto_untrack(self):
         os.chdir(USER_DIR)
 
-        tracking.track(PROTON_DIR_1 / PROTON_BIG, DEFAULT_UMU_CONFIG_NAME, refresh_versions=False)
+        tracking.track(
+            PROTON_DIR_1 / PROTON_BIG, DEFAULT_UMU_CONFIG_NAME, refresh_versions=False
+        )
         self.assertIn(PROTON_BIG, db.get(PROTON_DIR_1))
-        self.assertIn(USER_DIR / DEFAULT_UMU_CONFIG_NAME, db.get(PROTON_DIR_1, PROTON_BIG))
+        self.assertIn(
+            USER_DIR / DEFAULT_UMU_CONFIG_NAME, db.get(PROTON_DIR_1, PROTON_BIG)
+        )
 
         USER_DIR.rmdir()
         tracking.untrack_unlinked()

@@ -189,7 +189,6 @@ def fix(umu_config: Path = None):
     with open(umu_config, "rb") as toml_file:
         toml_conf = tomllib.load(toml_file)
 
-
     base_dir = umu_config.absolute().parent
     proton = Path(toml_conf["umu"]["proton"])
     prefix = Path(toml_conf["umu"]["prefix"])
