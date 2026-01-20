@@ -6,11 +6,10 @@ from typing import Any
 
 import tomli_w
 
-from umu_commander.classes import Element
+from umu_commander.Types import Element
 
 CONFIG_DIR: Path = Path.home() / ".config"
 CONFIG_NAME: Path = Path("umu-commander.toml")
-
 
 PROTON_PATHS: tuple[Path, ...] = (
     Path.home() / ".local/share/Steam/compatibilitytools.d/",
@@ -20,7 +19,7 @@ UMU_PROTON_PATH: Path = Path(Path.home() / ".local/share/Steam/compatibilitytool
 
 DB_NAME: Path = Path("tracking.json")
 DB_DIR: Path = Path.home() / ".local/share/umu/compatibilitytools"
-UMU_CONFIG_NAME: Path = Path("umu-config.toml")
+DEFAULT_UMU_CONFIG_NAME: Path = Path("umu-config.toml")
 DEFAULT_PREFIX_DIR: Path = Path.home() / ".local/share/wineprefixes/"
 DLL_OVERRIDES_OPTIONS: tuple[Element, ...] = (
     Element("winhttp.dll=n,b;", "winhttp for BepInEx"),
