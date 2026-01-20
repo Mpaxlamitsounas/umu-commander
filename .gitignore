@@ -1,3 +1,4 @@
 /tests/testing/
 /dist/
+.venv
 TODO.txt
