@@ -12,8 +12,10 @@ CONFIG_DIR: Path = Path.home() / ".config"
 CONFIG_NAME: Path = Path("umu-commander.toml")
 
 PROTON_PATHS: tuple[Path, ...] = (
-    Path.home() / ".local/share/Steam/compatibilitytools.d/",
+    Path.home() / ".local/share/Steam/compatibilitytools.d",
     Path.home() / ".local/share/umu/compatibilitytools",
+    Path.home()
+    / ".var/app/com.valvesoftware.Steam/.local/share/Steam/compatibilitytools.d",
 )
 UMU_PROTON_PATH: Path = Path(Path.home() / ".local/share/Steam/compatibilitytools.d")
 
