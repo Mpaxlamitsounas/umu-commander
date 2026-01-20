@@ -122,7 +122,7 @@ def create(
             "prefix": str(prefix.absolute()),
             "proton": str(proton_ver.absolute()),
             "launch_args": launch_args,
-            "exe": str(exe.absolute()),
+            "exe": str(exe),
         },
         "env": {"WINEDLLOVERRIDES": dll_overrides, "LANG": lang},
     }
