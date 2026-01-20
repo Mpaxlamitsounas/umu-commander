@@ -189,13 +189,12 @@ def fix(umu_config: Path = None):
     with open(umu_config, "rb") as toml_file:
         toml_conf = tomllib.load(toml_file)
 
-    base_dir = umu_config.absolute().parent
+    umu_config = umu_config.absolute()
+    base_dir = umu_config.parent
     proton = Path(toml_conf["umu"]["proton"])
     prefix = Path(toml_conf["umu"]["prefix"])
+    db.get(proton.parent, proton).append(umu_config)
     if not prefix.exists():
-        if base_dir in db.get(proton.parent, proton):
-            db.get(proton.parent, proton).append(base_dir)
-
         toml_conf["umu"]["prefix"] = base_dir / prefix.name
 
     exe = Path(toml_conf["umu"]["prefix"])
