@@ -1,6 +1,7 @@
 import os
 import subprocess
 import tomllib
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
@@ -8,31 +9,33 @@ import tomli_w
 from InquirerPy import inquirer
 
 import umu_commander.configuration as config
+from umu_commander import database as db
 from umu_commander import tracking
-from umu_commander.classes import Element
-from umu_commander.configuration import DLL_OVERRIDES_OPTIONS, LANG_OVERRIDES_OPTIONS
+from umu_commander.configuration import (
+    DEFAULT_UMU_CONFIG_NAME,
+    DLL_OVERRIDES_OPTIONS,
+    LANG_OVERRIDES_OPTIONS,
+)
 from umu_commander.proton import (
     collect_proton_versions,
     get_latest_umu_proton,
     refresh_proton_versions,
 )
+from umu_commander.Types import Element
 from umu_commander.util import build_choices
 
 
-def select_prefix() -> str:
+def select_prefix() -> Path:
     default = Element(str(Path.cwd() / "prefix"), "Current directory")
     choices = build_choices([default, *config.DEFAULT_PREFIX_DIR.iterdir()], None)
-    return str(inquirer.select("Select wine prefix:", choices, default).execute())
+    return inquirer.select("Select wine prefix:", choices, default).execute()
 
 
-def select_proton() -> str:
-    default = Element(str(get_latest_umu_proton()), "Latest UMU-Proton")
-    choices = build_choices([default], collect_proton_versions(sort=True))
-    return str(
-        inquirer.select(
-            "Select Proton version:", choices, Path.cwd() / "prefix"
-        ).execute()
-    )
+def select_proton() -> Path:
+    choices = build_choices(None, collect_proton_versions(sort=True))
+    return inquirer.select(
+        "Select Proton version:", choices, Path.cwd() / "prefix"
+    ).execute()
 
 
 def select_dll_override() -> str:
@@ -60,70 +63,108 @@ def set_launch_args() -> list[str]:
     return [opt.strip() for opt in options.split(" ")]
 
 
-def select_exe() -> str:
+def select_exe() -> Path:
     files = [file for file in Path.cwd().iterdir() if file.is_file()]
     choices = build_choices(files, None)
-    return str(inquirer.select("Select game executable:", choices).execute())
+    return inquirer.select("Select game executable:", choices).execute()
 
 
-def create(params: dict[str, dict[str, Any]], interactive: bool):
-    refresh_proton_versions()
+def create(
+    prefix: Path = None,
+    proton_ver: Path = None,
+    dll_overrides: str = None,
+    lang: str = None,
+    launch_args: Iterable[str] = None,
+    exe: Path = None,
+    output: Path = None,
+    *,
+    interactive: bool = True,
+    refresh_versions: bool = True,
+    quiet: bool = False,
+):
+    if refresh_versions:
+        refresh_proton_versions()
 
     # Prefix selection
-    if params.get("umu").get("prefix") is None:
+    if prefix is None:
         if interactive:
-            params["umu"]["prefix"] = select_prefix()
+            prefix = select_prefix()
+
         else:
-            params["umu"]["prefix"] = str(Path.cwd() / "prefix")
+            prefix = Path.cwd() / "prefix"
 
     # Proton selection
-    if params.get("umu").get("proton") is None:
+    if proton_ver is None:
         if interactive:
-            params["umu"]["proton"] = select_proton()
-        else:
-            params["umu"]["proton"] = str(get_latest_umu_proton())
+            proton_ver = select_proton()
 
-    selected_umu_latest: bool = params["umu"]["proton"] == str(get_latest_umu_proton())
+        else:
+            proton_ver = get_latest_umu_proton()
 
     # Select DLL overrides
-    if interactive:
-        params["env"]["WINEDLLOVERRIDES"] = select_dll_override()
-        print(params["env"]["WINEDLLOVERRIDES"])
+    if dll_overrides is None and interactive:
+        dll_overrides = select_dll_override()
 
     # Set language locale
-    if interactive:
-        if (lang := select_lang()) != "":
-            params["env"]["LANG"] = lang
+    if lang is None and interactive:
+        lang = select_lang()
 
     # Input executable launch args
-    if interactive:
-        params["umu"]["launch_args"] = set_launch_args()
+    if launch_args is None and interactive:
+        launch_args = set_launch_args()
 
     # Select executable name
-    if params["umu"].get("exe") is None:
-        params["umu"]["exe"] = select_exe()
+    if exe is None:
+        exe = select_exe()
+
+    params: dict[str, Any] = {
+        "umu": {
+            "prefix": str(prefix.absolute()),
+            "proton": str(proton_ver.absolute()),
+            "launch_args": launch_args,
+            "exe": str(exe.absolute()),
+        },
+        "env": {"WINEDLLOVERRIDES": dll_overrides, "LANG": lang},
+    }
+
+    if not params["umu"]["launch_args"]:
+        del params["umu"]["launch_args"]
+
+    if not params["env"]["WINEDLLOVERRIDES"]:
+        del params["env"]["WINEDLLOVERRIDES"]
+
+    if not params["env"]["LANG"]:
+        del params["env"]["LANG"]
+
+    if output is None:
+        output = Path.cwd() / DEFAULT_UMU_CONFIG_NAME
+
+    output = output.absolute()
 
     try:
-        with open(config.UMU_CONFIG_NAME, "wb") as file:
+        with open(output, "wb") as file:
             tomli_w.dump(params, file)
 
-        print(f"Configuration file {config.UMU_CONFIG_NAME} created at {os.getcwd()}.")
-        print(f"Use by running umu-commander run.")
-        if not selected_umu_latest:
-            tracking.track(
-                Path(params["umu"]["proton"], Path(params["umu"]["exe"])).parent,
-                refresh_versions=False,
-            )
-    except:
-        print("Could not create configuration file.")
+    except (ValueError, TypeError):
+        if not quiet:
+            print("Could not create configuration file.")
+
+    if not quiet:
+        print(f"Configuration file {output.name} created in {output.parent}.")
+        print(f"Use with umu-commander run.")
+
+    tracking.track(proton_ver, output, refresh_versions=False, quiet=quiet)
 
 
-def run():
-    if not config.UMU_CONFIG_NAME.exists():
-        print("No umu config in current directory.")
+def run(umu_config: Path = None):
+    if umu_config is None:
+        umu_config = Path.cwd() / DEFAULT_UMU_CONFIG_NAME
+
+    if not umu_config.exists():
+        print("Specified umu config does not exist.")
         return
 
-    with open(config.UMU_CONFIG_NAME, "rb") as toml_file:
+    with open(umu_config, "rb") as toml_file:
         toml_conf = tomllib.load(toml_file)
 
         prefix_path = Path(toml_conf["umu"]["prefix"])
@@ -132,6 +173,32 @@ def run():
 
         os.environ.update(toml_conf.get("env", {}))
         subprocess.run(
-            args=["umu-run", "--config", config.UMU_CONFIG_NAME],
+            args=["umu-run", "--config", config.DEFAULT_UMU_CONFIG_NAME],
             env=os.environ,
         )
+
+
+def fix(umu_config: Path = None):
+    if umu_config is None:
+        umu_config = Path.cwd() / DEFAULT_UMU_CONFIG_NAME
+
+    if not umu_config.exists():
+        print("Specified umu config does not exist.")
+        return
+
+    with open(umu_config, "rb") as toml_file:
+        toml_conf = tomllib.load(toml_file)
+
+
+    base_dir = umu_config.absolute().parent
+    proton = Path(toml_conf["umu"]["proton"])
+    prefix = Path(toml_conf["umu"]["prefix"])
+    if not prefix.exists():
+        if base_dir in db.get(proton.parent, proton):
+            db.get(proton.parent, proton).append(base_dir)
+
+        toml_conf["umu"]["prefix"] = base_dir / prefix.name
+
+    exe = Path(toml_conf["umu"]["prefix"])
+    if not exe.exists():
+        toml_conf["umu"]["exe"] = base_dir / exe.name

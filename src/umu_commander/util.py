@@ -4,9 +4,8 @@ from pathlib import Path
 from InquirerPy.base.control import Choice
 from InquirerPy.separator import Separator
 
-from umu_commander import VERSION
 from umu_commander import database as db
-from umu_commander.classes import Element
+from umu_commander.Types import Element
 
 
 def count_users(proton_dir: Path, proton_ver: Path) -> str:
@@ -53,13 +52,3 @@ def build_choices(
         )
 
     return choices
-
-
-def print_help():
-    print(
-        f"umu-commander {VERSION}",
-        "Interactive CLI tool to augment umu-launcher as well as help you manage its Proton versions.",
-        "",
-        "For details, usage, and more, see the README.md file, or visit https://github.com/Mpaxlamitsounas/umu-commander.",
-        sep="\n",
-    )
