@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import IntEnum
 
 
 class Element(str):
@@ -12,7 +12,7 @@ class Element(str):
         return instance
 
 
-class ExitCode(Enum):
+class ExitCode(IntEnum):
     SUCCESS = 0
     DECODING_ERROR = 1
     INVALID_SELECTION = 2
