@@ -4,6 +4,7 @@ from pathlib import Path
 from InquirerPy import inquirer
 
 import umu_commander.database as db
+from umu_commander.configuration import DEFAULT_UMU_CONFIG_NAME
 from umu_commander.proton import (
     collect_proton_versions,
     get_latest_umu_proton,
@@ -14,9 +15,17 @@ from umu_commander.util import (
 )
 
 
+def select_config() -> str:
+    files = [file for file in Path.cwd().iterdir() if file.is_file()]
+    choices = build_choices(files, None)
+    return inquirer.select("Select umu-commander config:", choices).execute()
+
+
 def untrack(target_dir: Path = None, *, quiet: bool = False):
     if target_dir is None:
         target_dir = Path.cwd()
+
+    target_dir = target_dir.absolute()
 
     for proton_dir in db.get().keys():
         for proton_ver in db.get(proton_dir):
@@ -29,15 +38,20 @@ def untrack(target_dir: Path = None, *, quiet: bool = False):
 
 def track(
     proton_ver: Path = None,
-    target_dir: Path = None,
+    config: Path = None,
     *,
+    interactive: bool = True,
     refresh_versions: bool = True,
     quiet: bool = False,
 ):
-    if target_dir is None:
-        target_dir = Path.cwd()
+    if config is None:
+        if interactive:
+            config = select_config()
 
-    if refresh_versions and proton_ver is None:
+        else:
+            config = Path.cwd() / DEFAULT_UMU_CONFIG_NAME
+
+    if refresh_versions:
         refresh_proton_versions()
 
     if proton_ver is None:
@@ -47,12 +61,15 @@ def track(
             "Select Proton version to track directory with:", choices
         ).execute()
 
-    untrack(quiet=True)
-    db.get(proton_ver.parent, proton_ver).append(target_dir)
+    proton_ver = proton_ver.absolute()
+    config = config.absolute()
+
+    untrack(config, quiet=True)
+    db.get(proton_ver.parent, proton_ver).append(config)
 
     if not quiet:
         print(
-            f"Directory {target_dir} added to Proton version's {proton_ver.name} in {proton_ver.parent} tracking list."
+            f"Directory {config} added to Proton version's {proton_ver.name} in {proton_ver.parent} tracking list."
         )
 
 
@@ -63,6 +80,8 @@ def users(proton_ver: Path = None):
         proton_ver: Path = inquirer.select(
             "Select Proton version to view user list:", choices
         ).execute()
+
+    proton_ver = proton_ver.absolute()
 
     if proton_ver.parent in db.get() and proton_ver in db.get(proton_ver.parent):
         version_users: list[Path] = db.get(proton_ver.parent, proton_ver)
