@@ -173,7 +173,7 @@ def run(umu_config: Path = None):
 
         os.environ.update(toml_conf.get("env", {}))
         subprocess.run(
-            args=["umu-run", "--config", config.DEFAULT_UMU_CONFIG_NAME],
+            args=["umu-run", "--config", umu_config],
             env=os.environ,
         )
 
