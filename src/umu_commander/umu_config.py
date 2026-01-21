@@ -60,7 +60,7 @@ def set_launch_args() -> list[str]:
     options: str = inquirer.text(
         "Enter executable options, separated by space:"
     ).execute()
-    return [opt.strip() for opt in options.split(" ")]
+    return [opt.strip() for opt in options.split(" ") if opt.strip() != ""]
 
 
 def select_exe() -> Path:
