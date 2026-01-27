@@ -133,9 +133,9 @@ def create(
         "umu": {
             "prefix": str(prefix),
             "proton": str(proton_ver),
-            "launch_args": launch_args,
             "runners": runners,
             "exe": str(exe),
+            "launch_args": launch_args,
         },
         "env": {"WINEDLLOVERRIDES": dll_overrides, "LANG": lang},
     }
