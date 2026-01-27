@@ -108,7 +108,7 @@ def get_parser_results() -> tuple[ArgumentParser, Namespace]:
     parser.add_argument(
         "-a",
         "--launch-args",
-        help="Sets launch arguments in config creation. Must be supplied as -a/--launch-args=\"<Launch args>\" (with an equals sign) because of argparse limitations. Default: No arguments",
+        help='Sets launch arguments in config creation. Must be supplied as -a/--launch-args="<Launch args>" (with an equals sign) because of argparse limitations. Default: No arguments',
     )
     parser.add_argument(
         "-r",
@@ -140,7 +140,9 @@ def get_parser_results() -> tuple[ArgumentParser, Namespace]:
 
     args = parser.parse_args()
 
-    args.launch_args = args.launch_args.split(" ") if args.launch_args is not None else None
+    args.launch_args = (
+        args.launch_args.split(" ") if args.launch_args is not None else None
+    )
     args.runners = args.runners.split(" ") if args.runners is not None else None
 
     return parser, args
