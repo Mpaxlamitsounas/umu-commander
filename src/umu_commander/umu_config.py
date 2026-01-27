@@ -187,7 +187,7 @@ def run(umu_config: Path = None):
 
         os.environ.update(toml_conf.get("env", {}))
         subprocess.run(
-            args=[*toml_conf.get("runners", []), "umu-run", "--config", umu_config],
+            args=[*toml_conf["umu"].get("runners", []), "umu-run", "--config", umu_config],
             env=os.environ,
         )
 
