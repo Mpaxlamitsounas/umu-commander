@@ -69,6 +69,7 @@ def set_runners() -> list[str]:
     ).execute()
     return [opt.strip() for opt in options.split(" ") if opt.strip() != ""]
 
+
 def select_exe() -> Path:
     files = [file for file in Path.cwd().iterdir() if file.is_file()]
     choices = build_choices(files, None)
