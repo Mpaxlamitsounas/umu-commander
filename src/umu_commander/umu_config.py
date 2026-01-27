@@ -63,6 +63,12 @@ def set_launch_args() -> list[str]:
     return [opt.strip() for opt in options.split(" ") if opt.strip() != ""]
 
 
+def set_runners() -> list[str]:
+    options: str = inquirer.text(
+        "Enter runners in order, separated by space:"
+    ).execute()
+    return [opt.strip() for opt in options.split(" ") if opt.strip() != ""]
+
 def select_exe() -> Path:
     files = [file for file in Path.cwd().iterdir() if file.is_file()]
     choices = build_choices(files, None)
@@ -75,6 +81,7 @@ def create(
     dll_overrides: str = None,
     lang: str = None,
     launch_args: Iterable[str] = None,
+    runners: Iterable[str] = None,
     exe: Path = None,
     output: Path = None,
     *,
@@ -113,6 +120,10 @@ def create(
     if launch_args is None and interactive:
         launch_args = set_launch_args()
 
+    # Set runners for umu-run
+    if runners is None and interactive:
+        runners = set_runners()
+
     # Select executable name
     if exe is None:
         exe = select_exe()
@@ -122,6 +133,7 @@ def create(
             "prefix": str(prefix.absolute()),
             "proton": str(proton_ver.absolute()),
             "launch_args": launch_args,
+            "runners": runners,
             "exe": str(exe),
         },
         "env": {"WINEDLLOVERRIDES": dll_overrides, "LANG": lang},
@@ -135,6 +147,9 @@ def create(
 
     if not params["env"]["LANG"]:
         del params["env"]["LANG"]
+
+    if not params["umu"]["runners"]:
+        del params["umu"]["runners"]
 
     if output is None:
         output = Path.cwd() / DEFAULT_UMU_CONFIG_NAME
@@ -173,7 +188,7 @@ def run(umu_config: Path = None):
 
         os.environ.update(toml_conf.get("env", {}))
         subprocess.run(
-            args=["umu-run", "--config", umu_config],
+            args=[*toml_conf.get("runners", []), "umu-run", "--config", umu_config],
             env=os.environ,
         )
 

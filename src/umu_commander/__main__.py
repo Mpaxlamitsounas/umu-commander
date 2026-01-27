@@ -112,6 +112,11 @@ def get_parser_results() -> tuple[ArgumentParser, Namespace]:
         help="Sets launch arguments in config creation. Default: No arguments",
     )
     parser.add_argument(
+        "-r",
+        "--runners",
+        help="Sets runners (like MangoHud) in config creation, order matters. Default: No runners",
+    )
+    parser.add_argument(
         "-o",
         "--output",
         help=f"Sets output config filename in config creation. Default directory/{DEFAULT_UMU_CONFIG_NAME}",
@@ -171,6 +176,7 @@ def main() -> int:
                     args.dll_overrides,
                     args.lang,
                     args.launch_args,
+                    args.runners,
                     args.input,
                     args.output,
                     interactive=args.interactive,
