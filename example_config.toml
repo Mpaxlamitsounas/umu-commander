@@ -1,8 +1,16 @@
 [umu]
-proton = "/home/<username>/.local/share/Steam/compatibilitytools.d/UMU-Proton-9.0-4e"
-prefix = "/home/<username>/.local/share/Steam/compatibilitytools.d/prefix"
+prefix = "prefix"
+proton = "~/.local/share/Steam/compatibilitytools.d/UMU-Proton-9.0-4e"
+runners = [
+    "gamemoderun",
+    "mangohud",
+]
 exe = "foo.bar"
-launch_args = ['-n', 'num=100', 'numeric']
+launch_args = [
+    "-n",
+    "num=100",
+    "--numeric",
+]
 
 [env]
 WINEDLLOVERRIDES = "winhttp.dll=n;"
