@@ -3,9 +3,9 @@
 
 This tool does not provide a centralised way of managing your games or utilise template umu-configs. See [faugus-launcher](https://github.com/Faugus/faugus-launcher) or [Nero-umu](https://github.com/SeongGino/Nero-umu) for something more akin to a games launcher, and [umu-wrapper](https://github.com/korewaChino/umu-wrapper) for templating functionality. 
 
-Proton versions can track and untrack directories, with the intention of safely removing them once no game depends on one.
+Proton versions can track and untrack game configs, with the intention of safely removing them once no config (and subsequently application) depends on one.
 
-Vanilla umu config files currently (06/2025) do not support setting environmental variables. This tool adds such functionality with an extra TOML table within said configs, see `example_config.toml` for an example.
+Vanilla umu config files currently (06/2025) do not support setting environmental variables or runners. This tool adds such functionality with an extra TOML table within said configs, see `example_config.toml` for an example.
 
 ### Config
 The configuration file lives at `~/.config/umu-commander.toml`, which cannot be changed as of now. You can generate one by running the app by itself.
@@ -39,7 +39,8 @@ umu-commander needs one of the following verbs specified after the executable na
 | `fix`     | Attempts to fix invalid paths created from moving configs around.                                                                                                                                                                                                            |
 
 ### Installation/Usage
-Add umu-run to your PATH and then install with pipx by running `pipx install umu-commander`. After that you can use umu-commander by running `umu-commander <verb>`. 
+Add umu-run to your PATH and then install with pipx by running `pipx install umu-commander`. \
+After that you can run `umu-commander -h` for an explanation of the options, and `umu-commander <verb> [<options>]` for using the app's functionality.  
 
 ### Return codes
 | Number | Name                | Description                                                     |
