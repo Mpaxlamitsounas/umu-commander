@@ -130,8 +130,8 @@ def create(
 
     params: dict[str, Any] = {
         "umu": {
-            "prefix": str(prefix.absolute()),
-            "proton": str(proton_ver.absolute()),
+            "prefix": str(prefix),
+            "proton": str(proton_ver),
             "launch_args": launch_args,
             "runners": runners,
             "exe": str(exe),
@@ -153,8 +153,6 @@ def create(
 
     if output is None:
         output = Path.cwd() / DEFAULT_UMU_CONFIG_NAME
-
-    output = output.absolute()
 
     try:
         with open(output, "wb") as file:
@@ -204,12 +202,11 @@ def fix(umu_config: Path = None):
     with open(umu_config, "rb") as toml_file:
         toml_conf = tomllib.load(toml_file)
 
-    umu_config = umu_config.absolute()
     base_dir = umu_config.parent
     proton = Path(toml_conf["umu"]["proton"])
     prefix = Path(toml_conf["umu"]["prefix"])
     db.get(proton.parent, proton).append(umu_config)
-    if not prefix.exists():
+    if not prefix.exists() and prefix.is_absolute():
         toml_conf["umu"]["prefix"] = str(base_dir / prefix.name)
 
     exe = Path(toml_conf["umu"]["exe"])
