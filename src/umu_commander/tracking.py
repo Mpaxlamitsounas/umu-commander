@@ -8,7 +8,7 @@ from umu_commander.configuration import DEFAULT_UMU_CONFIG_NAME
 from umu_commander.proton import (
     collect_proton_versions,
     get_latest_umu_proton,
-    refresh_proton_versions,
+    update_proton_versions,
 )
 from umu_commander.util import (
     build_choices,
@@ -41,7 +41,7 @@ def track(
     config: Path = None,
     *,
     interactive: bool = True,
-    refresh_versions: bool = True,
+    update_versions: bool = True,
     quiet: bool = False,
 ):
     if config is None:
@@ -51,8 +51,8 @@ def track(
         else:
             config = Path.cwd() / DEFAULT_UMU_CONFIG_NAME
 
-    if refresh_versions:
-        refresh_proton_versions()
+    if update_versions:
+        update_proton_versions()
 
     if proton_ver is None:
         proton_dirs = collect_proton_versions(sort=True)

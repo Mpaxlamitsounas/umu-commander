@@ -19,7 +19,7 @@ from umu_commander.configuration import (
 from umu_commander.proton import (
     collect_proton_versions,
     get_latest_umu_proton,
-    refresh_proton_versions,
+    update_proton_versions,
 )
 from umu_commander.Types import Element
 from umu_commander.util import build_choices
@@ -87,11 +87,11 @@ def create(
     output: Path = None,
     *,
     interactive: bool = True,
-    refresh_versions: bool = True,
+    update_versions: bool = True,
     quiet: bool = False,
 ):
-    if refresh_versions:
-        refresh_proton_versions()
+    if update_versions:
+        update_proton_versions()
 
     # Prefix selection
     if prefix is None:
@@ -167,7 +167,7 @@ def create(
         print(f"Configuration file {output.name} created in {output.parent}.")
         print(f"Use with umu-commander run.")
 
-    tracking.track(proton_ver, output, refresh_versions=False, quiet=quiet)
+    tracking.track(proton_ver, output, update_versions=False, quiet=quiet)
 
 
 def run(umu_config: Path = None):

@@ -129,13 +129,11 @@ def get_parser_results() -> tuple[ArgumentParser, Namespace]:
         dest="interactive",
     )
     parser.add_argument(
-        "-r",
-        "--refresh",
         "-u",
         "--update",
         help="Check for new Proton versions while running.",
         action="store_true",
-        dest="refresh",
+        dest="update",
     )
 
     args = parser.parse_args()
@@ -160,7 +158,7 @@ def main() -> int:
                 tracking.track(
                     args.proton,
                     args.input,
-                    refresh_versions=args.refresh,
+                    update_versions=args.update,
                     quiet=args.quiet,
                 )
 
@@ -184,7 +182,7 @@ def main() -> int:
                     args.input,
                     args.output,
                     interactive=args.interactive,
-                    refresh_versions=args.refresh,
+                    update_versions=args.update,
                     quiet=args.quiet,
                 )
 

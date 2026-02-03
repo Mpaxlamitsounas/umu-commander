@@ -11,7 +11,7 @@ def _natural_sort_proton_ver_key(p: Path, _nsre=re.compile(r"(\d+)")):
     return [int(text) if text.isdigit() else text for text in _nsre.split(s)]
 
 
-def refresh_proton_versions():
+def update_proton_versions():
     print("Updating umu Proton.")
     umu_update_process = subprocess.run(
         ["umu-run", '""'],

@@ -19,7 +19,7 @@ class Tracking(unittest.TestCase):
         os.chdir(USER_DIR)
 
         tracking.track(
-            PROTON_DIR_1 / PROTON_BIG, DEFAULT_UMU_CONFIG_NAME, refresh_versions=False
+            PROTON_DIR_1 / PROTON_BIG, DEFAULT_UMU_CONFIG_NAME, update_versions=False
         )
 
         self.assertIn(PROTON_BIG, db.get(PROTON_DIR_1))
@@ -35,7 +35,7 @@ class Tracking(unittest.TestCase):
         os.chdir(USER_DIR)
 
         tracking.track(
-            PROTON_DIR_1 / PROTON_BIG, DEFAULT_UMU_CONFIG_NAME, refresh_versions=False
+            PROTON_DIR_1 / PROTON_BIG, DEFAULT_UMU_CONFIG_NAME, update_versions=False
         )
         self.assertIn(PROTON_BIG, db.get(PROTON_DIR_1))
         self.assertIn(
