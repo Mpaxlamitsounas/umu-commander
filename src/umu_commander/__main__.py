@@ -129,12 +129,12 @@ def get_parser_results() -> tuple[ArgumentParser, Namespace]:
         dest="interactive",
     )
     parser.add_argument(
-        "-nr",
-        "--no-refresh",
-        "-nu",
-        "--no-update",
-        help="Do not check for new Proton versions while running.",
-        action="store_false",
+        "-r",
+        "--refresh",
+        "-u",
+        "--update",
+        help="Check for new Proton versions while running.",
+        action="store_true",
         dest="refresh",
     )
 
