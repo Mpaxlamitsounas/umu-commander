@@ -185,7 +185,7 @@ def run(umu_config: Path = None):
         if not prefix_path.exists():
             prefix_path.mkdir()
 
-        for key, value in toml_conf.get("env", {}):
+        for key, value in toml_conf.get("env", {}).items():
             if isinstance(value, int) or isinstance(value, float):
                 toml_conf["env"][key] = str(value)
 
