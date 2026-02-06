@@ -189,7 +189,6 @@ def run(umu_config: Path = None):
             if isinstance(value, int) or isinstance(value, float):
                 toml_conf["env"][key] = str(value)
 
-
         os.environ.update(toml_conf.get("env", {}))
         subprocess.run(
             args=[
