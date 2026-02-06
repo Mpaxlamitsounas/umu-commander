@@ -185,6 +185,11 @@ def run(umu_config: Path = None):
         if not prefix_path.exists():
             prefix_path.mkdir()
 
+        for key, value in toml_conf.get("env", {}):
+            if isinstance(value, int) or isinstance(value, float):
+                toml_conf["env"][key] = str(value)
+
+
         os.environ.update(toml_conf.get("env", {}))
         subprocess.run(
             args=[
