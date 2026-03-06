@@ -105,6 +105,9 @@ def delete():
             if proton_ver == get_latest_umu_proton():
                 continue
 
+            if not (proton_dir / proton_ver).exists():
+                del db.get(proton_dir)[proton_ver]
+
             if len(version_users) == 0:
                 confirmed: bool = inquirer.confirm(
                     f"Version {proton_ver.name} in {proton_dir} is tracking no directories, delete?"
