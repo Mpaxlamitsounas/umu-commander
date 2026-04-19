@@ -26,7 +26,7 @@ from umu_commander.util import build_choices
 
 
 def select_prefix() -> Path:
-    default = Element(str(Path.cwd() / "prefix"), "Current directory")
+    default = Element("prefix", "Current directory")
     choices = build_choices([default, *config.DEFAULT_PREFIX_DIR.iterdir()], None)
     return inquirer.select("Select wine prefix:", choices, default).execute()
 
@@ -99,7 +99,7 @@ def create(
             prefix = select_prefix()
 
         else:
-            prefix = Path.cwd() / "prefix"
+            prefix = "prefix"
 
     # Proton selection
     if proton_ver is None:
@@ -127,7 +127,7 @@ def create(
 
     # Select executable name
     if exe is None:
-        exe = select_exe()
+        exe = select_exe().name
 
     params: dict[str, Any] = {
         "umu": {
