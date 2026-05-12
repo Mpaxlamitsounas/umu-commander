@@ -21,16 +21,17 @@ def select_config() -> str:
     return inquirer.select("Select umu-commander config:", choices).execute()
 
 
-def untrack(target_dir: Path = None, *, quiet: bool = False):
-    if target_dir is None:
-        target_dir = Path.cwd()
+def untrack(config: Path = None, *, quiet: bool = False):
+    if config is None:
+        config = Path.cwd() / DEFAULT_UMU_CONFIG_NAME
 
-    target_dir = target_dir.absolute()
+    config = config.absolute()
 
     for proton_dir in db.get().keys():
         for proton_ver in db.get(proton_dir):
-            if target_dir in db.get(proton_dir, proton_ver):
-                db.get(proton_dir, proton_ver).remove(target_dir)
+            if config in db.get(proton_dir, proton_ver):
+
+                db.get(proton_dir, proton_ver).remove(config)
 
     if not quiet:
         print("Config removed from all tracking lists.")
