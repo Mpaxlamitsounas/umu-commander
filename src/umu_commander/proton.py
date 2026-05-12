@@ -58,6 +58,10 @@ def get_latest_umu_proton() -> Path | None:
     if len(umu_proton_versions) == 0:
         return None
 
+    for version in umu_proton_versions:
+        if version.stem == "UMU-Latest":
+            return version
+
     umu_proton_versions = sorted(
         umu_proton_versions, key=_natural_sort_proton_ver_key, reverse=True
     )
