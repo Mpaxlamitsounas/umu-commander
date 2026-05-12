@@ -44,9 +44,4 @@ class Tracking(unittest.TestCase):
 
         USER_DIR.rmdir()
         tracking.untrack_unlinked()
-        self.assertIn(PROTON_BIG, db.get(PROTON_DIR_1))
-        self.assertNotIn(
-            USER_DIR,
-            db.get(PROTON_DIR_1, PROTON_BIG),
-            "Auto untrack did not untrack removed directory.",
-        )
+        self.assertNotIn(PROTON_BIG, db.get(PROTON_DIR_1))
