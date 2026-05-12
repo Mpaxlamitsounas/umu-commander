@@ -116,14 +116,22 @@ def delete():
                 if confirmed:
                     try:
                         shutil.rmtree(proton_dir / proton_ver)
+
                     except FileNotFoundError:
                         pass
+
                     del db.get(proton_dir)[proton_ver]
 
 
 def untrack_unlinked():
-    for proton_dir in db.get().keys():
-        for proton_ver, version_users in db.get()[proton_dir].items():
+    for proton_dir in db.get().copy().keys():
+        for proton_ver, version_users in db.get(proton_dir).copy().items():
             for user in version_users:
                 if not user.exists():
-                    db.get(proton_dir, proton_ver).remove(user)
+                    version_users.remove(user)
+
+            if len(version_users) == 0 or not proton_ver.exists():
+                del db.get()[proton_dir][proton_ver]
+
+        if len(db.get(proton_dir)) == 0 or not proton_dir.exists():
+            del db.get()[proton_dir]
