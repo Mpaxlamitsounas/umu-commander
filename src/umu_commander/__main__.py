@@ -152,7 +152,11 @@ def main() -> int:
 
     parser, args = get_parser_results()
 
-    if args.proton is not None and not args.proton.exists() and not args.proton.is_absolute():
+    if (
+        args.proton is not None
+        and not args.proton.exists()
+        and not args.proton.is_absolute()
+    ):
         print("Searching for proton in proton directories.")
         for proton_dir in config.PROTON_PATHS:
             for proton_ver in proton_dir.iterdir():
@@ -161,7 +165,9 @@ def main() -> int:
                     print(f"Found in {proton_dir}.")
 
         if not args.proton.exists():
-            print(f"Could not locate proton version with name {args.proton}, continuing.")
+            print(
+                f"Could not locate proton version with name {args.proton}, continuing."
+            )
 
     try:
         match args.verb:
