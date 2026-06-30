@@ -24,7 +24,7 @@ def update_proton_versions():
         if "PROTONPATH" in line and "/" in line:
             try:
                 left: int = line.rfind("/") + 1
-                print(f"Latest UMU-Proton: {line[left:len(line) - 1]}.")
+                print(f"Latest UMU-Proton: {line[left:len(line)]}.")
             except ValueError:
                 print("Could not fetch latest UMU-Proton.")
 
