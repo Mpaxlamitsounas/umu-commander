@@ -40,14 +40,12 @@ def select_proton() -> Path:
 
 def select_dll_override() -> str:
     choices = build_choices(DLL_OVERRIDES_OPTIONS, None)
-    return "".join(
-        [
-            selection
-            for selection in inquirer.checkbox(
-                "Select DLLs to override:", choices
-            ).execute()
-        ]
-    )
+    return "".join([
+        selection
+        for selection in inquirer.checkbox(
+            "Select DLLs to override:", choices
+        ).execute()
+    ])
 
 
 def select_lang() -> str:

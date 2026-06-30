@@ -33,22 +33,20 @@ def build_choices(
         choices.append(Separator(""))
 
     for group, elements in groups.items():
-        choices.extend(
-            [
-                Separator(f"In: {group}"),
-                *[
-                    Choice(
-                        el,
-                        name=(
-                            el.name
-                            if not count_elements
-                            else f"{el.name} {count_users(group, el)}"
-                        ),
-                    )
-                    for el in elements
-                ],
-                Separator(""),
-            ]
-        )
+        choices.extend([
+            Separator(f"In: {group}"),
+            *[
+                Choice(
+                    el,
+                    name=(
+                        el.name
+                        if not count_elements
+                        else f"{el.name} {count_users(group, el)}"
+                    ),
+                )
+                for el in elements
+            ],
+            Separator(""),
+        ])
 
     return choices
