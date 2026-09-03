@@ -70,7 +70,7 @@ def track(
 
     if not quiet:
         print(
-            f"Config {config} added to Proton version's {proton_ver.name} in {proton_ver.parent} tracking list."
+            f"Config {config} added to Proton version's {proton_ver.name} users in {proton_ver.parent} tracking list."
         )
 
 
@@ -130,7 +130,7 @@ def untrack_unlinked():
                 if not user.exists():
                     version_users.remove(user)
 
-            if len(version_users) == 0 or not proton_ver.exists():
+            if not proton_ver.exists():
                 del db.get()[proton_dir][proton_ver]
 
         if len(db.get(proton_dir)) == 0 or not proton_dir.exists():
