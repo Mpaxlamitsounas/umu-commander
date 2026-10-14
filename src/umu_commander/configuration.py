@@ -27,6 +27,7 @@ DLL_OVERRIDES_OPTIONS: tuple[Element, ...] = (
     Element("winhttp.dll=n,b;", "winhttp for BepInEx"),
 )
 LANG_OVERRIDES_OPTIONS: tuple[Element, ...] = (Element("ja_JP.UTF8", "Japanese"),)
+DO_AUTOUPDATE_DEFAULT: bool = True
 
 module = importlib.import_module(__name__)
 

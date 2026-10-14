@@ -131,8 +131,15 @@ def get_parser_results() -> tuple[ArgumentParser, Namespace]:
     parser.add_argument(
         "-u",
         "--update",
-        help="Check for new Proton versions while running.",
+        help="Check for new Proton versions and runtimes while running.",
         action="store_true",
+        dest="update",
+    )
+    parser.add_argument(
+        "-nu",
+        "--no-update",
+        help="Disable checking for new Proton versions and runtimes while running.",
+        action="store_false",
         dest="update",
     )
 
@@ -205,7 +212,7 @@ def main() -> int:
                 )
 
             case "run":
-                umu_config.run(args.input)
+                umu_config.run(args.input, args.update)
 
             case "fix":
                 umu_config.fix(args.input)

@@ -12,7 +12,7 @@ def _natural_sort_proton_ver_key(p: Path, _nsre=re.compile(r"(\d+)")):
 
 
 def update_proton_versions():
-    print("Updating umu Proton.")
+    print("Updating umu Proton and steam runtime.")
     umu_update_process = subprocess.run(
         ["umu-run", '""'],
         env={"PROTONPATH": "UMU-Latest", "UMU_LOG": "debug"},

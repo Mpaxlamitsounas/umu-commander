@@ -168,9 +168,12 @@ def create(
     tracking.track(proton_ver, output, update_versions=False, quiet=quiet)
 
 
-def run(umu_config: Path = None):
+def run(umu_config: Path = None, update: bool = None):
     if umu_config is None:
         umu_config = Path.cwd() / DEFAULT_UMU_CONFIG_NAME
+
+    if update is None:
+        update = config.DO_AUTOUPDATE_DEFAULT
 
     if not umu_config.exists():
         print("Specified umu config does not exist.")
@@ -186,6 +189,10 @@ def run(umu_config: Path = None):
         for key, value in toml_conf.get("env", {}).items():
             if isinstance(value, int) or isinstance(value, float):
                 toml_conf["env"][key] = str(value)
+
+        if not update:
+            toml_conf["env"]["UMU_RUNTIME_UPDATE"] = "0"
+            print("Auto-update is disabled.")
 
         os.environ.update(toml_conf.get("env", {}))
         subprocess.run(
