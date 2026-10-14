@@ -131,7 +131,7 @@ def get_parser_results() -> tuple[ArgumentParser, Namespace]:
     parser.add_argument(
         "-u",
         "--update",
-        help="Check for new Proton versions and runtimes while running.",
+        help="Check for new Proton versions and runtimes when running umu-launcher.",
         action="store_true",
         default=None,
         dest="update",
@@ -139,7 +139,7 @@ def get_parser_results() -> tuple[ArgumentParser, Namespace]:
     parser.add_argument(
         "-nu",
         "--no-update",
-        help="Disable checking for new Proton versions and runtimes while running.",
+        help="Disable checking for new Proton versions and runtimes when running umu-launcher.",
         action="store_false",
         default=None,
         dest="update",
