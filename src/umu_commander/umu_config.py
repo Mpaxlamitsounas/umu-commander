@@ -191,7 +191,7 @@ def run(umu_config: Path = None, update: bool = None):
                 toml_conf["env"][key] = str(value)
 
         if not update:
-            toml_conf["env"]["UMU_RUNTIME_UPDATE"] = "0"
+            os.environ.update({"UMU_RUNTIME_UPDATE": "0"})
             print("Auto-update is disabled.")
 
         os.environ.update(toml_conf.get("env", {}))
