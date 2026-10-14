@@ -30,9 +30,11 @@ LANG_OVERRIDES_OPTIONS: tuple[Element, ...] = (Element("ja_JP.UTF8", "Japanese")
 DO_AUTOUPDATE_DEFAULT: bool = True
 
 module = importlib.import_module(__name__)
+toml_conf: dict[str, Any] = {}
 
 
 def load():
+    global toml_conf
     with open(os.path.join(CONFIG_DIR, CONFIG_NAME), "rb") as conf_file:
         toml_conf = tomllib.load(conf_file)
 
@@ -42,7 +44,6 @@ def load():
             "PROTON_PATHS",
             (Path(proton_dir) for proton_dir in toml_conf["PROTON_PATHS"]),
         )
-        del toml_conf["PROTON_PATHS"]
 
         # DLL/LANG Override translation
         for key in ["DLL", "LANG"]:
@@ -54,10 +55,17 @@ def load():
                     for name, value in toml_conf[f"{key}_OVERRIDES_OPTIONS"].items()
                 ),
             )
-            del toml_conf[f"{key}_OVERRIDES_OPTIONS"]
 
         for key, value in toml_conf.items():
-            setattr(module, key, Path(value))
+            if key == "DO_AUTOUPDATE_DEFAULT":
+                setattr(module, key, value)
+
+            elif key not in [
+                "PROTON_PATHS",
+                "DLL_OVERRIDES_OPTIONS",
+                "LANG_OVERRIDES_OPTIONS",
+            ]:
+                setattr(module, key, Path(value))
 
 
 def _get_attributes() -> dict[str, Any]:
@@ -74,22 +82,36 @@ def dump():
     if not os.path.exists(CONFIG_DIR):
         os.mkdir(CONFIG_DIR)
 
-    with open(os.path.join(CONFIG_DIR, CONFIG_NAME), "wb") as conf_file:
-        toml_conf = _get_attributes()
-        del toml_conf["CONFIG_DIR"]
-        del toml_conf["CONFIG_NAME"]
+    global toml_conf
+    module_conf = _get_attributes()
+    del module_conf["CONFIG_DIR"]
+    del module_conf["CONFIG_NAME"]
 
-        for key, value in toml_conf.items():
-            match key:
-                case "PROTON_PATHS":
-                    toml_conf[key] = [str(proton_dir) for proton_dir in PROTON_PATHS]
+    missing_keys: dict[str, Any] = {}
+    for key in set(module_conf.keys()) - set(toml_conf.keys()):
+        match key:
+            case "PROTON_PATHS":
+                missing_keys[key] = [str(proton_dir) for proton_dir in PROTON_PATHS]
 
-                case "DLL_OVERRIDES_OPTIONS" | "LANG_OVERRIDES_OPTIONS":
-                    toml_conf[key] = {
-                        override.name: override for override in getattr(module, key)
-                    }
+            case "DLL_OVERRIDES_OPTIONS" | "LANG_OVERRIDES_OPTIONS":
+                missing_keys[key] = {
+                    override.name: override for override in getattr(module, key)
+                }
 
-                case _:
-                    toml_conf[key] = str(value)
+            case "DO_AUTOUPDATE_DEFAULT":
+                pass
 
+            case _:
+                missing_keys[key] = str(module_conf[key])
+
+    if len(missing_keys) != 0 and (CONFIG_DIR / CONFIG_NAME).exists():
+        config_path_bak: Path = CONFIG_DIR / (str(CONFIG_NAME) + ".bak")
+        if not config_path_bak.exists():
+            print(f"Config file renamed to {config_path_bak}.")
+            (CONFIG_DIR / CONFIG_NAME).rename(config_path_bak)
+
+        print("Added missing keys to config file.")
+
+    toml_conf.update(missing_keys)
+    with open(CONFIG_DIR / CONFIG_NAME, "wb") as conf_file:
         tomli_w.dump(toml_conf, conf_file)
