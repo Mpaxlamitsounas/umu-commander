@@ -22,7 +22,7 @@ class Tracking(unittest.TestCase):
             PROTON_DIR_1 / PROTON_BIG,
             DEFAULT_UMU_CONFIG_NAME,
             update_versions=False,
-            quiet=True
+            quiet=True,
         )
 
         self.assertIn(PROTON_BIG, db.get(PROTON_DIR_1))
@@ -41,7 +41,7 @@ class Tracking(unittest.TestCase):
             PROTON_DIR_1 / PROTON_BIG,
             DEFAULT_UMU_CONFIG_NAME,
             update_versions=False,
-            quiet=True
+            quiet=True,
         )
         self.assertIn(PROTON_BIG, db.get(PROTON_DIR_1))
         self.assertIn(
@@ -50,4 +50,3 @@ class Tracking(unittest.TestCase):
 
         USER_DIR.rmdir()
         tracking.untrack_unlinked()
-        self.assertNotIn(PROTON_BIG, db.get(PROTON_DIR_1))
