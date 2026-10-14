@@ -19,13 +19,13 @@ def init() -> ExitCode:
 
     except (JSONDecodeError, KeyError):
         config_path: Path = CONFIG_DIR / CONFIG_NAME
-        config_path_old: Path = CONFIG_DIR / (str(CONFIG_NAME) + ".old")
+        config_path_bak: Path = CONFIG_DIR / (str(CONFIG_NAME) + ".bak")
 
         print(f"Config file at {config_path} could not be read.")
 
-        if not config_path_old.exists():
-            print(f"Config file renamed to {config_path_old}.")
-            config_path.rename(config_path_old)
+        if not config_path_bak.exists():
+            print(f"Config file renamed to {config_path_bak}.")
+            config_path.rename(config_path_bak)
 
         return ExitCode.DECODING_ERROR
 
@@ -37,13 +37,13 @@ def init() -> ExitCode:
 
     except JSONDecodeError:
         db_path: Path = config.DB_DIR / config.DB_NAME
-        db_path_old: Path = config.DB_DIR / (str(config.DB_NAME) + ".old")
+        db_path_bak: Path = config.DB_DIR / (str(config.DB_NAME) + ".bak")
 
         print(f"Tracking file at {db_path} could not be read.")
 
-        if not db_path_old.exists():
-            db_path.rename(db_path_old)
-            print(f"DB file renamed to {db_path_old}.")
+        if not db_path_bak.exists():
+            db_path.rename(db_path_bak)
+            print(f"DB file renamed to {db_path_bak}.")
 
     except FileNotFoundError:
         pass
@@ -232,6 +232,7 @@ def main() -> int:
     finally:
         tracking.untrack_unlinked()
         db.dump()
+        config.dump()
 
 
 if __name__ == "__main__":
