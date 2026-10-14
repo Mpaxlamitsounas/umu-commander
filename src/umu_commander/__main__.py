@@ -133,6 +133,7 @@ def get_parser_results() -> tuple[ArgumentParser, Namespace]:
         "--update",
         help="Check for new Proton versions and runtimes while running.",
         action="store_true",
+        default=None,
         dest="update",
     )
     parser.add_argument(
@@ -140,6 +141,7 @@ def get_parser_results() -> tuple[ArgumentParser, Namespace]:
         "--no-update",
         help="Disable checking for new Proton versions and runtimes while running.",
         action="store_false",
+        default=None,
         dest="update",
     )
 
